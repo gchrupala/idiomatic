@@ -27,10 +27,11 @@
 <body>
 <main>
   <h1>Speech test</h1>
-  <p class="muted">Say the highlighted answer (or the sentence shown under "Say"). The page checks it with the browser's speech recognition and keeps a recording of your voice, so it can also be tested with Whisper later. Nothing is sent anywhere except what the browser's own recogniser sends.</p>
+  <p class="muted">Tap Speak, say the highlighted answer (or the sentence under "Say"), then tap Stop. "Browser recognition" tests the browser's own recogniser. "Record for Whisper" only records your voice, for testing with Whisper afterwards. Phones can't do both at once. Nothing is sent anywhere except what the browser's own recogniser sends.</p>
   <div class="row">
     <label>Language <select id="lang"><option value="fa">Persian (fa-IR)</option><option value="es">Spanish (es-ES)</option></select></label>
-    <label><input type="checkbox" id="local"> On-device only</label>
+    <label>Test <select id="mode"><option value="browser">Browser recognition</option><option value="record">Record for Whisper</option></select></label>
+    <label id="local-label"><input type="checkbox" id="local"> On-device only</label>
   </div>
   <p class="muted" id="support"></p>
   <div id="card">
@@ -38,7 +39,7 @@
     <div class="say" id="say"></div>
     <div class="opts" id="opts"></div>
     <div class="row">
-      <button class="primary" id="rec">Hold to speak</button>
+      <button class="primary" id="rec">Speak</button>
       <button id="skip">Skip</button>
     </div>
     <p id="heard"></p>
@@ -120,7 +121,7 @@ function show() {
 }
 
 async function checkSupport() {
-  if (!SR) { $('support').textContent = 'This browser has no speech recognition. Recordings are still kept for the Whisper test.'; return; }
+  if (!SR) { $('support').textContent = 'This browser has no speech recognition, so only recording for the Whisper test works.'; return; }
   let msg = 'Speech recognition is available.';
   if (SR.available) {
     try {
@@ -132,17 +133,24 @@ async function checkSupport() {
   $('support').textContent = msg;
 }
 
+const mode = () => (SR ? $('mode').value : 'record');
+let active = null; // the item being answered, while listening or recording
+
 async function startRec() {
   const item = queue[pos];
-  if (!item) return;
-  try { stream = stream || (await navigator.mediaDevices.getUserMedia({ audio: true })); } catch (e) { $('heard').textContent = 'No microphone access.'; return; }
-  chunks = [];
-  recorder = new MediaRecorder(stream);
-  recorder.ondataavailable = (e) => chunks.push(e.data);
-  recorder.start();
-  const t0 = performance.now();
-  item.t0 = t0;
-  if (!SR) return;
+  if (!item || active) return;
+  active = item;
+  item.t0 = performance.now();
+  setButton('Stop');
+  if (mode() === 'record') {
+    try { stream = stream || (await navigator.mediaDevices.getUserMedia({ audio: true })); } catch (e) { item.error = 'no microphone access'; return finish(item); }
+    chunks = [];
+    recorder = new MediaRecorder(stream);
+    recorder.ondataavailable = (e) => chunks.push(e.data);
+    recorder.onstop = () => { item.blob = new Blob(chunks, { type: recorder.mimeType }); finish(item); };
+    recorder.start();
+    return;
+  }
   const r = new SR();
   r.lang = lang === 'fa' ? 'fa-IR' : 'es-ES';
   r.maxAlternatives = 5;
@@ -151,35 +159,43 @@ async function startRec() {
     r.processLocally = true;
     if (SR.install) { try { await SR.install({ langs: [r.lang], processLocally: true }); } catch (e) {} }
   }
-  r.onresult = (e) => { item.alts = [...e.results[0]].map((a) => a.transcript); item.secs = (performance.now() - t0) / 1000; };
+  r.onresult = (e) => { item.alts = [...e.results[0]].map((a) => a.transcript); item.secs = (performance.now() - item.t0) / 1000; };
   r.onerror = (e) => { item.error = e.error; };
+  r.onend = () => finish(item); // also fires by itself after a pause in speech
   item.recog = r;
-  r.start();
+  try { r.start(); } catch (e) { item.error = String(e); finish(item); }
 }
 
 function stopRec() {
-  const item = queue[pos];
-  if (!item || !recorder) return;
-  const r = item.recog;
-  recorder.onstop = () => {
-    item.blob = new Blob(chunks, { type: recorder.mimeType });
-    const finish = () => grade(item);
-    if (r) { r.onend = finish; r.stop(); } else finish();
-  };
-  recorder.stop();
+  const item = active;
+  if (!item) return;
+  setButton('Checking…');
+  if (item.recog) item.recog.stop();
+  else if (recorder && recorder.state !== 'inactive') recorder.stop();
 }
+
+function finish(item) {
+  if (active !== item) return;
+  active = null;
+  setButton('Speak');
+  grade(item);
+}
+
+function setButton(label) { $('rec').textContent = label; }
 
 function grade(item) {
   const cands = ITEMS[lang].groups[item.group];
   const alts = item.alts || [];
   const m = match(alts, cands, lang);
   const accepted = m.score >= THRESHOLD;
-  const outcome = !item.inSet ? (accepted ? 'false accept' : 'rejected (correct)')
+  const outcome = mode() === 'record' && !item.error ? 'recorded'
+    : !item.inSet ? (accepted ? 'false accept' : 'rejected (correct)')
     : !accepted ? 'not recognised' : cands[m.index] === item.text ? 'right' : 'wrong answer';
   const opts = [...$('opts').children];
   if (accepted) opts[m.index].classList.add('picked', cands[m.index] === item.text && item.inSet ? 'right' : 'wrong');
-  $('heard').textContent = (item.error ? `Error: ${item.error}. ` : '') + `Heard: ${alts[0] ?? '(nothing)'} → ${outcome} (score ${m.score.toFixed(2)})`;
-  results.push({ lang, text: item.text, group: item.group, in_set: item.inSet, alternatives: alts, best: accepted ? cands[m.index] : null, score: m.score, outcome, secs: item.secs ?? null, error: item.error ?? null, local: $('local').checked, blob: item.blob });
+  $('heard').textContent = outcome === 'recorded' ? 'Recorded.'
+    : (item.error ? `Error: ${item.error}. ` : '') + `Heard: ${alts[0] ?? '(nothing)'} → ${outcome} (score ${m.score.toFixed(2)})`;
+  results.push({ mode: mode(), lang, text: item.text, group: item.group, in_set: item.inSet, alternatives: alts, best: accepted ? cands[m.index] : null, score: m.score, outcome, secs: item.secs ?? null, error: item.error ?? null, local: $('local').checked, blob: item.blob });
   summarise();
   setTimeout(() => { pos++; show(); }, 1500);
 }
@@ -189,6 +205,7 @@ function summarise() {
     const r = results.filter((x) => x.lang === l);
     if (!r.length) return null;
     const c = (o) => r.filter((x) => x.outcome === o).length;
+    if (r.every((x) => x.outcome === 'recorded')) return `${l}: ${r.length} recorded`;
     return `${l}: ${c('right')} right, ${c('wrong answer')} wrong, ${c('not recognised')} not recognised, ${c('rejected (correct)')} of ${r.filter((x) => !x.in_set).length} out-of-set rejected`;
   }).filter(Boolean);
   $('summary').textContent = lines.join(' · ') || 'No answers yet.';
@@ -208,12 +225,12 @@ async function download() {
 }
 
 const rec = $('rec');
-rec.addEventListener('pointerdown', (e) => { e.preventDefault(); rec.textContent = 'Listening…'; startRec(); });
-rec.addEventListener('pointerup', () => { rec.textContent = 'Hold to speak'; stopRec(); });
-rec.addEventListener('pointerleave', () => { if (rec.textContent !== 'Hold to speak') { rec.textContent = 'Hold to speak'; stopRec(); } });
-$('skip').onclick = () => { pos++; show(); };
+rec.onclick = () => (active ? stopRec() : startRec());
+$('mode').onchange = () => { $('local-label').hidden = mode() === 'record'; };
+$('skip').onclick = () => { if (!active) { pos++; show(); } };
 $('download').onclick = download;
 $('lang').onchange = (e) => { lang = e.target.value; buildQueue(); show(); checkSupport(); };
+if (!SR) { $('mode').value = 'record'; $('mode').disabled = true; $('local-label').hidden = true; }
 buildQueue(); show(); checkSupport();
 </script>
 </body>
