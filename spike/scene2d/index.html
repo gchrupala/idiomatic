@@ -16,6 +16,11 @@
   h1 { font-size: 1.2rem; margin: 6px 0 10px; }
   .stage { position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; background: #bfe6ff; }
   svg { display: block; width: 100%; height: 100%; }
+  svg.b0 .v1, svg.b0 .v2, svg.b1 .v0, svg.b1 .v2, svg.b2 .v0, svg.b2 .v1 { display: none; }
+  .paper { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: .35; background-size: 240px; }
+  .styles { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 4px 0 10px; }
+  .chip { padding: 6px 12px; border-radius: 999px; font-size: .9rem; text-decoration: none; color: inherit; border: 1px solid var(--line); background: var(--card); }
+  .chip.on { border-color: var(--accent); color: var(--accent); }
   .overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgb(0 0 0 / .3); color: #fff; text-align: center; }
   .overlay button { font-size: 1.1rem; }
   .letter { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-2deg); width: min(78%, 360px); padding: 18px 20px; background: #fffaf0; color: #3a2a1a; border-radius: 6px; box-shadow: 0 8px 30px rgb(0 0 0 / .35); font: italic 1.15rem/1.4 Georgia, serif; text-align: center; opacity: 0; transition: opacity .5s; pointer-events: none; }
@@ -32,8 +37,10 @@
 <body>
 <main>
   <h1>Una carta sin nombre</h1>
+  <nav class="styles" id="styles"></nav>
   <div class="stage" id="stage">
-    <svg id="svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice"></svg>
+    <svg id="svg" class="b0" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice"></svg>
+    <div class="paper" id="paper" hidden></div>
     <div class="letter" id="letter">El sábado, a las diez,<br>en la Plaza Mayor.</div>
     <div class="overlay" id="overlay"><button class="primary" id="start">▶ Empezar</button></div>
   </div>
@@ -43,7 +50,7 @@
     <button class="round" id="play" aria-label="Pausa">⏸</button>
     <button class="round" id="next" aria-label="Siguiente">⏭</button>
   </div>
-  <p class="muted">Prueba de estilo: capítulo 1 entero, dibujado y animado en código (SVG), sin imágenes ni servicios externos.</p>
+  <p class="muted">Prueba de estilo: capítulo 1 entero, dibujado y animado en código (SVG), sin imágenes ni servicios externos. Trazos a mano: rough.js (MIT).</p>
 </main>
 <script type="module" src="scene2d.js"></script>
 </body>

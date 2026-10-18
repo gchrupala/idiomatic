@@ -7,7 +7,13 @@
  * blinking and lip-sync from the loudness of the sentence audio.
  */
 
+import rough from './vendor/rough.esm.js';
+
 const ROOT = '../../';
+const params = new URLSearchParams(location.search);
+const STYLE = params.get('style') || 'ink'; // ink | crayon | flat
+const MOTION = params.get('motion') || 'peppa'; // peppa | springy
+const FPS = +(params.get('fps') || (STYLE === 'crayon' ? 12 : 0)); // 0 = every frame; 12 = held frames, like hand animation
 const NS = 'http://www.w3.org/2000/svg';
 const $ = (id) => document.getElementById(id);
 const svg = $('svg');
@@ -20,18 +26,28 @@ function el(tag, attrs = {}, parent = null) {
   return e;
 }
 
+const shade = (hex, f) => '#' + [1, 3, 5].map((i) => Math.round(Math.min(255, parseInt(hex.slice(i, i + 2), 16) * f)).toString(16).padStart(2, '0')).join('');
+
 // A damped spring. Low damping overshoots and wobbles; that is the cartoon feel.
 class Spring {
   constructor(v = 0, k = 120, d = 14) { this.v = v; this.target = v; this.vel = 0; this.k = k; this.d = d; }
   step(dt) {
-    const a = this.k * (this.target - this.v) - this.d * this.vel;
-    this.vel += a * dt;
-    this.v += this.vel * dt;
+    // small substeps keep stiff springs stable at low or held frame rates
+    const n = Math.ceil(dt * 240), h = dt / n;
+    for (let i = 0; i < n; i++) {
+      this.vel += (this.k * (this.target - this.v) - this.d * this.vel) * h;
+      this.v += this.vel * h;
+    }
     return this.v;
   }
   snap(v = this.target) { this.v = this.target = v; this.vel = 0; }
   kick(vel) { this.vel += vel; }
 }
+
+const M = {
+  springy: { flipK: 320, flipD: 22, armK: 95, armD: 10, stride: 11, bob: 7, swing: 30, talkRock: 0, talkHz: 9, levelRock: 5, squash: 0.06 },
+  peppa: { flipK: 1600, flipD: 80, armK: 210, armD: 24, stride: 6.5, bob: 2.5, swing: 24, talkRock: 5, talkHz: 5.5, levelRock: 2, squash: 0.03 },
+}[MOTION];
 
 let instant = false; // true while earlier beats are replayed on a seek
 const set = (spring, v) => { spring.target = v; if (instant) spring.snap(v); };
@@ -42,12 +58,84 @@ const world = el('g', {}, svg);
 const layers = {};
 for (const n of ['sky', 'city', 'house', 'room', 'back', 'table', 'front', 'fx']) layers[n] = el('g', {}, world);
 
-function rect(p, x, y, w, h, fill, extra = {}) { return el('rect', { x, y, width: w, height: h, fill, ...extra }, p); }
-function circle(p, cx, cy, r, fill, extra = {}) { return el('circle', { cx, cy, r, fill, ...extra }, p); }
-function path(p, d, fill, extra = {}) { return el('path', { d, fill, ...extra }, p); }
+// ---------- drawing: flat, or hand-drawn with rough.js ----------
+//
+// Hand-drawn styles draw every shape a few times with different random
+// wobble and cycle through the copies ("line boil", as in hand animation).
+
+const LOOK = {
+  flat: null,
+  ink: { roughness: 0.7, bowing: 0.9, strokeWidth: 1.7, ink: '#3b2a20', boil: 3 },
+  crayon: { roughness: 1.35, bowing: 1.4, strokeWidth: 2.2, crayon: true, boil: 3 },
+}[STYLE];
+const rs = LOOK && rough.svg(svg);
+let seed = 7;
+
+function plain(tag, attrs, p, extra) {
+  const { plain: _p, noInk, area, ...rest } = extra;
+  const e = el(tag, { ...attrs, ...rest }, p);
+  if (LOOK && LOOK.ink && attrs.fill !== 'none' && !extra.stroke && !noInk) { e.setAttribute('stroke', LOOK.ink); e.setAttribute('stroke-width', LOOK.strokeWidth * 0.8); }
+  return e;
+}
+
+// make(generator, options) returns a rough drawable; `attrs` is the flat fallback
+function shape(p, tag, attrs, make, fill, extra = {}) {
+  if (!LOOK || extra.plain) return plain(tag, attrs, p, extra);
+  const g = el('g', {}, p);
+  if (extra.opacity !== undefined) g.setAttribute('opacity', extra.opacity);
+  const stroke = extra.stroke || (LOOK.ink ? LOOK.ink : fill !== 'none' ? shade(fill, 0.72) : '#333');
+  const width = +(extra['stroke-width'] || LOOK.strokeWidth);
+  const big = (extra.area || 0) > 40000;
+  const copies = big ? 1 : LOOK.boil;
+  if (LOOK.crayon && fill !== 'none') {
+    const under = make(rs.generator, { seed: seed++, roughness: LOOK.roughness * 0.6, bowing: LOOK.bowing, stroke: 'none', fill: shade(fill, 1.04), fillStyle: 'solid' });
+    g.appendChild(rs.draw(under));
+  }
+  for (let k = 0; k < copies; k++) {
+    const o = { seed: seed++, roughness: LOOK.roughness, bowing: LOOK.bowing, stroke, strokeWidth: width };
+    if (fill !== 'none') {
+      if (LOOK.crayon && !extra.smooth) Object.assign(o, { fill: shade(fill, 0.9), fillStyle: 'hachure', hachureGap: big ? 7 : 3.2, fillWeight: big ? 2.4 : 1.4, hachureAngle: -41 + 8 * k });
+      else Object.assign(o, { fill, fillStyle: 'solid' });
+    }
+    const node = rs.draw(make(rs.generator, o));
+    if (copies > 1) node.setAttribute('class', 'v' + k);
+    g.appendChild(node);
+  }
+  return g;
+}
+const roundRect = (x, y, w, h, r) => `M${x + r} ${y} H${x + w - r} Q${x + w} ${y} ${x + w} ${y + r} V${y + h - r} Q${x + w} ${y + h} ${x + w - r} ${y + h} H${x + r} Q${x} ${y + h} ${x} ${y + h - r} V${y + r} Q${x} ${y} ${x + r} ${y} Z`;
+function rect(p, x, y, w, h, fill, extra = {}) {
+  const r = Math.min(+(extra.rx || 0), w / 2, h / 2);
+  extra = { area: w * h, ...extra };
+  if (r) return shape(p, 'rect', { x, y, width: w, height: h, fill }, (gen, o) => gen.path(roundRect(x, y, w, h, r), o), fill, extra);
+  return shape(p, 'rect', { x, y, width: w, height: h, fill }, (gen, o) => gen.rectangle(x, y, w, h, o), fill, extra);
+}
+function circle(p, cx, cy, r, fill, extra = {}) {
+  if (r < 5) return plain('circle', { cx, cy, r, fill }, p, { noInk: r < 3, ...extra });
+  return shape(p, 'circle', { cx, cy, r, fill }, (gen, o) => gen.circle(cx, cy, 2 * r, o), fill, { area: 3 * r * r, ...extra });
+}
+function ellipse(p, cx, cy, rx, ry, fill, extra = {}) {
+  return shape(p, 'ellipse', { cx, cy, rx, ry, fill }, (gen, o) => gen.ellipse(cx, cy, 2 * rx, 2 * ry, o), fill, { area: 3 * rx * ry, ...extra });
+}
+function path(p, d, fill, extra = {}) {
+  return shape(p, 'path', { d, fill }, (gen, o) => gen.path(d, o), fill, extra);
+}
+// limbs and other thick lines; ink style outlines them
+function line(p, x1, y1, x2, y2, color, w, extra = {}) {
+  const attrs = { x1, y1, x2, y2, stroke: color, 'stroke-width': w, 'stroke-linecap': 'round' };
+  if (!LOOK) return el('line', { ...attrs, ...extra }, p);
+  const g = el('g', {}, p);
+  if (LOOK.ink) {
+    el('line', { ...attrs, stroke: LOOK.ink, 'stroke-width': w + 3.2 }, g);
+    el('line', attrs, g);
+    return g;
+  }
+  shape(g, 'line', attrs, (gen, o) => gen.line(x1, y1, x2, y2, { ...o, strokeWidth: w * 0.8, stroke: color }), 'none', { stroke: color });
+  return g;
+}
 
 // sky over everything to the left of the kitchen
-rect(layers.sky, -2000, -400, 2900, 1000, '#bfe6ff');
+rect(layers.sky, -2000, -400, 2900, 1000, '#bfe6ff', { plain: true, noInk: true });
 circle(layers.sky, -1650, 70, 38, '#ffd35a');
 const clouds = [];
 for (const [x, y, s] of [[-1500, 80, 1], [-1150, 50, 0.8], [-700, 70, 1.1], [-350, 40, 0.9]]) {
@@ -118,10 +206,10 @@ const DOOR = { x: 680, w: 92, h: 196 };
 const props = {};
 {
   const p = layers.room;
-  rect(p, -40, -200, 880, FLOOR + 200, '#ffe7c2');
+  rect(p, -40, -200, 880, FLOOR + 200, '#ffe7c2', { plain: true, noInk: true });
   rect(p, -40, FLOOR - 70, 880, 8, '#f1c98f');
-  rect(p, -40, FLOOR, 880, 200, '#c98f5a');
-  for (let x = -40; x < 840; x += 90) el('line', { x1: x, y1: FLOOR, x2: x - 40, y2: FLOOR + 120, stroke: '#b57c4a', 'stroke-width': 3 }, p);
+  rect(p, -40, FLOOR, 880, 200, '#c98f5a', { plain: true, noInk: true });
+  for (let x = -40; x < 840; x += 90) line(p, x, FLOOR, x - 40, FLOOR + 120, '#b57c4a', 3, { plain: true });
   // window with curtains
   rect(p, 110, 80, 160, 150, '#bfe6ff', { rx: 6 });
   circle(p, 150, 150, 18, '#ffffff'); circle(p, 172, 142, 20, '#ffffff');
@@ -173,12 +261,12 @@ const props = {};
   rect(p, 316, FLOOR - 72, 10, 72, '#a35b2f'); rect(p, 498, FLOOR - 72, 10, 72, '#a35b2f');
   const top = FLOOR - 82;
   const item = (name, x, build) => { const g = el('g', { transform: `translate(${x} ${top})` }, p); build(g); props[name] = { g, x, y: top, bounce: new Spring(0, 260, 12) }; };
-  item('plateL', 330, (g) => el('ellipse', { cx: 0, cy: -2, rx: 18, ry: 4, fill: '#ffffff' }, g));
-  item('plateR', 494, (g) => el('ellipse', { cx: 0, cy: -2, rx: 18, ry: 4, fill: '#ffffff' }, g));
+  item('plateL', 330, (g) => ellipse(g, 0, -2, 18, 4, '#ffffff'));
+  item('plateR', 494, (g) => ellipse(g, 0, -2, 18, 4, '#ffffff'));
   item('pan', 412, (g) => {
     path(g, 'M-26 0 L-22 -14 L22 -14 L26 0 Z', '#b07a3c');
-    el('ellipse', { cx: -6, cy: -18, rx: 20, ry: 8, fill: '#e3a95e' }, g);
-    el('ellipse', { cx: 8, cy: -21, rx: 16, ry: 7, fill: '#d9984a' }, g);
+    ellipse(g, -6, -18, 20, 8, '#e3a95e');
+    ellipse(g, 8, -21, 16, 7, '#d9984a');
   });
   item('tomate', 452, (g) => {
     circle(g, 0, -9, 9, '#e5352b'); circle(g, 15, -7, 7, '#e5352b');
@@ -198,7 +286,6 @@ const props = {};
 
 // ---------- characters ----------
 
-const shade = (hex, f) => '#' + [1, 3, 5].map((i) => Math.round(Math.min(255, parseInt(hex.slice(i, i + 2), 16) * f)).toString(16).padStart(2, '0')).join('');
 
 class Person {
   constructor(id, o) {
@@ -212,14 +299,14 @@ class Person {
     this.bodyG = el('g', {}, this.scaleG);
     const limb = (parent, color, len, w) => {
       const g = el('g', {}, parent);
-      el('line', { x1: 0, y1: 0, x2: 0, y2: len, stroke: color, 'stroke-width': w, 'stroke-linecap': 'round' }, g);
+      line(g, 0, 0, 0, len, color, w);
       return g;
     };
     // legs hang from the hip, shoes point forward
     const legColor = o.trousers || o.skin;
     this.legs = [shade(legColor, 0.85), legColor].map((c, i) => {
       const g = limb(this.bodyG, c, L - 4, 6);
-      el('ellipse', { cx: 4, cy: L - 3, rx: 8, ry: 4.5, fill: i ? o.shoes : shade(o.shoes, 0.8) }, g);
+      ellipse(g, 4, L - 3, 8, 4.5, i ? o.shoes : shade(o.shoes, 0.8));
       return g;
     });
     const shoulderY = -L - B + 9;
@@ -240,15 +327,15 @@ class Person {
     el('ellipse', { cx, cy, rx: R, ry: R * 0.94 }, clip);
     const hairBack = { bob: [cx - R * 0.32, cy - R * 0.08, R * 0.98, R * 1.04], long: [cx - R * 0.42, cy + R * 0.42, R * 0.86, R * 1.42], short: [cx - R * 0.2, cy - R * 0.22, R * 0.98, R * 0.9], bun: [cx - R * 0.2, cy - R * 0.22, R * 0.98, R * 0.9] }[o.hairStyle];
     if (o.hairStyle === 'bun') circle(h, cx - R * 0.95, cy - R * 0.55, R * 0.42, o.hair);
-    el('ellipse', { cx: hairBack[0], cy: hairBack[1], rx: hairBack[2], ry: hairBack[3], fill: o.hair }, h);
+    ellipse(h, hairBack[0], hairBack[1], hairBack[2], hairBack[3], o.hair);
     circle(h, cx - R * 0.2, cy + R * 0.05, R * 0.17, shade(o.skin, 0.93));
-    el('ellipse', { cx, cy, rx: R, ry: R * 0.94, fill: o.skin }, h);
+    ellipse(h, cx, cy, R, R * 0.94, o.skin, { smooth: true });
     circle(h, cx + R * 0.98, cy + R * 0.05, R * 0.14, shade(o.skin, 0.96));
     // hair over the top of the face, cut by the face outline
     const cap = el('g', { 'clip-path': `url(#${clipId})` }, h);
     const hc = { bob: [-0.1, -0.62, 1.05, 0.62], long: [-0.25, -0.6, 1.0, 0.58], short: [-0.3, -0.7, 0.95, 0.52], bun: [-0.3, -0.62, 0.95, 0.56] }[o.hairStyle];
-    el('ellipse', { cx: cx + R * hc[0], cy: cy + R * hc[1], rx: R * hc[2], ry: R * hc[3], fill: o.hair }, cap);
-    if (o.hairStyle === 'bob' || o.hairStyle === 'long') el('ellipse', { cx: cx - R * 0.78, cy: cy + R * 0.1, rx: R * 0.32, ry: R * 0.9, fill: o.hair }, cap);
+    ellipse(cap, cx + R * hc[0], cy + R * hc[1], R * hc[2], R * hc[3], o.hair);
+    if (o.hairStyle === 'bob' || o.hairStyle === 'long') ellipse(cap, cx - R * 0.78, cy + R * 0.1, R * 0.32, R * 0.9, o.hair);
     if (o.beard) path(cap, `M${cx - R * 0.5} ${cy + R * 0.2} Q${cx + R * 0.2} ${cy + R * 1.2} ${cx + R * 1.1} ${cy + R * 0.25} L${cx + R * 1.1} ${cy + R * 1.2} L${cx - R * 0.5} ${cy + R * 1.2} Z`, o.hair);
     circle(h, cx + R * 0.42, cy + R * 0.3, R * 0.15, '#ff8a8a', { opacity: 0.55 });
     this.eyes = [[0.36, -0.12], [0.74, -0.14]].map(([ex, ey]) => {
@@ -270,8 +357,8 @@ class Person {
 
     this.x = 0; this.facing = 1;
     this.sp = {
-      flip: new Spring(1, 320, 22), walk: new Spring(0, 60, 14), sit: new Spring(0, 110, 15), crouch: new Spring(0, 110, 15),
-      squash: new Spring(0, 380, 9), armF: new Spring(8, 95, 10), armB: new Spring(-8, 95, 10), tilt: new Spring(0, 140, 12),
+      flip: new Spring(1, M.flipK, M.flipD), walk: new Spring(0, 60, 14), sit: new Spring(0, 110, 15), crouch: new Spring(0, 110, 15),
+      squash: new Spring(0, 380, 9), armF: new Spring(8, M.armK, M.armD), armB: new Spring(-8, M.armK, M.armD), tilt: new Spring(0, 140, 12), talk: new Spring(0, 30, 11),
       lean: new Spring(0, 90, 12), happy: new Spring(0.4, 60, 12), surprised: new Spring(0, 80, 12), mouth: new Spring(0, 900, 45),
       stretch: new Spring(0, 140, 10), lookY: new Spring(0, 90, 14),
     };
@@ -307,7 +394,7 @@ class Person {
         sp.squash.kick(2.2);
         if (goal.face) this.face(goal.face);
         goal.then && goal.then();
-      } else { this.x += Math.sign(d) * step; this.phase += step / (11 * this.o.scale); }
+      } else { this.x += Math.sign(d) * step; this.phase += step / (M.stride * this.o.scale); }
     }
     sp.walk.target = this.path.length ? 1 : 0;
     for (const s of Object.values(sp)) s.step(dt);
@@ -322,12 +409,12 @@ class Person {
     sp.armF.target = aF - 22 * Math.sin(this.phase) * w;
     sp.armB.target = aB + 22 * Math.sin(this.phase) * w;
     // legs: swing when walking, stick out when sitting, splay when crouching
-    const swing = 30 * Math.sin(this.phase) * w;
+    const swing = M.swing * Math.sin(this.phase) * w;
     const legF = swing - 78 * sit - 48 * cr, legB = -swing - 72 * sit + 30 * cr;
     this.legs[0].setAttribute('transform', `translate(-2 ${-this.L}) rotate(${legB})`);
     this.legs[1].setAttribute('transform', `translate(3 ${-this.L}) rotate(${legF})`);
     // the body bounces as it walks; hops are a simple arc
-    let lift = 7 * Math.abs(Math.cos(this.phase)) * w;
+    let lift = M.bob * Math.abs(Math.cos(this.phase)) * w;
     if (this.hopT < 0.45) { this.hopT += dt; lift += this.hopH * Math.sin((this.hopT / 0.45) * Math.PI); }
     const seat = 50 / this.o.scale;
     const drop = (this.L - seat - 3) * sit + this.L * 0.42 * cr;
@@ -339,7 +426,8 @@ class Person {
     // head: talking bobs it, nods and shakes rock it
     const level = speaker === this ? mouthLevel : 0;
     sp.mouth.target = level;
-    let tilt = sp.tilt.v + 5 * sp.mouth.v * Math.sin(t * 9) - 10 * sp.lookY.v;
+    sp.talk.target = speaker === this && !audio.paused ? 1 : 0;
+    let tilt = sp.tilt.v + M.levelRock * sp.mouth.v * Math.sin(t * 9) + M.talkRock * sp.talk.v * Math.sin(t * M.talkHz) - 10 * sp.lookY.v;
     if (this.nodT < 0.7) { this.nodT += dt; tilt += 12 * Math.sin(this.nodT * 18) * (1 - this.nodT / 0.7); }
     let shakeX = 0;
     if (this.shakeT < 0.9) { this.shakeT += dt; shakeX = Math.sin(this.shakeT * 20) * (1 - this.shakeT / 0.9); }
@@ -366,7 +454,7 @@ class Person {
     this.mouth.setAttribute('d', d);
     this.mouth.setAttribute('fill', m > 0.04 || su > 0.35 ? '#7a2030' : 'none');
     // whole figure: position, cartoon turn (scaleX through zero), squash
-    const sq = sp.squash.v * 0.06;
+    const sq = sp.squash.v * M.squash;
     this.squashG.setAttribute('transform', `scale(${1 + sq} ${1 - sq})`);
     this.flipG.setAttribute('transform', `scale(${sp.flip.v} 1)`);
     this.root.setAttribute('transform', `translate(${this.x} ${FLOOR})`);
@@ -382,24 +470,24 @@ class Dog {
     const c = o.color, dark = shade(c, 0.8);
     this.legs = [[-22, dark], [14, dark], [-16, c], [20, c]].map(([x, col]) => {
       const g = el('g', {}, this.bodyG);
-      el('line', { x1: 0, y1: 0, x2: 0, y2: 22, stroke: col, 'stroke-width': 6, 'stroke-linecap': 'round' }, g);
+      line(g, 0, 0, 0, 22, col, 6);
       g.dataset.x = x;
       return g;
     });
     this.tail = el('g', {}, this.bodyG);
-    el('line', { x1: 0, y1: 0, x2: -4, y2: -20, stroke: c, 'stroke-width': 6, 'stroke-linecap': 'round' }, this.tail);
-    el('ellipse', { cx: 0, cy: -34, rx: 32, ry: 15, fill: c }, this.bodyG);
-    el('ellipse', { cx: -4, cy: -38, rx: 12, ry: 8, fill: o.patch }, this.bodyG);
+    line(this.tail, 0, 0, -4, -20, c, 6);
+    ellipse(this.bodyG, 0, -34, 32, 15, c);
+    ellipse(this.bodyG, -4, -38, 12, 8, o.patch);
     this.headG = el('g', {}, this.bodyG);
     const h = this.headG;
     circle(h, 32, -54, 17, c);
-    el('ellipse', { cx: 47, cy: -49, rx: 12, ry: 8, fill: c }, h);
+    ellipse(h, 47, -49, 12, 8, c);
     circle(h, 58, -51, 4.5, '#222');
     circle(h, 38, -60, 3.4, '#222');
     this.mouth = path(h, '', '#7a2030');
-    this.ear = el('ellipse', { cx: 24, cy: -56, rx: 7, ry: 14, fill: dark }, h);
+    this.ear = ellipse(h, 24, -56, 7, 14, dark);
     this.x = 0; this.facing = 1; this.path = []; this.phase = 0; this.hopT = 9; this.barkT = 9;
-    this.sp = { flip: new Spring(1, 320, 22), walk: new Spring(0, 60, 14), wag: new Spring(0.3, 60, 10) };
+    this.sp = { flip: new Spring(1, M.flipK, M.flipD), walk: new Spring(0, 60, 14), wag: new Spring(0.3, 60, 10) };
   }
   layer(name) { layers[name].appendChild(this.root); }
   place(x, facing = 1) { this.x = x; this.path = []; this.face(facing, true); }
@@ -713,9 +801,13 @@ function tick(dt) {
 
 const MAX_DT = +(new URLSearchParams(location.search).get('maxdt') || 0.05);
 let last = performance.now();
+let held = 0, boilT = 0, boil = 0;
 function frame(now) {
-  const dt = Math.min((now - last) / 1000, MAX_DT);
+  requestAnimationFrame(frame);
+  let dt = Math.min((now - last) / 1000, MAX_DT);
   last = now;
+  if (FPS) { held += dt; if (held < 1 / FPS) { measure(); return; } dt = held; held = 0; }
+  if (LOOK) { boilT += dt; if (boilT > 0.125) { boilT = 0; boil = (boil + 1) % LOOK.boil; svg.setAttribute('class', 'b' + boil); } }
   tick(dt);
   measure();
   for (const a of Object.values(A)) a.update(dt, clock);
@@ -738,7 +830,28 @@ function frame(now) {
   layers.bus.setAttribute('transform', `translate(${-1950 + ((clock * 90) % 1150)} ${FLOOR + 20})`);
   layers.flag.setAttribute('transform', layers.flag.getAttribute('transform').replace(/ skewY\([^)]*\)/, '') + ` skewY(${4 * Math.sin(clock * 5)})`);
   updateCamera(dt);
-  requestAnimationFrame(frame);
+}
+
+// style picker and paper grain
+const VARIANTS = [
+  ['Tinta', 'style=ink&motion=peppa'],
+  ['Ceras', 'style=crayon&motion=peppa'],
+  ['Plano', 'style=flat&motion=peppa'],
+  ['Plano, con muelles', 'style=flat&motion=springy'],
+];
+for (const [label, q] of VARIANTS) {
+  const here = new URLSearchParams(q);
+  const on = here.get('style') === STYLE && here.get('motion') === MOTION;
+  const link = document.createElement('a');
+  link.className = 'chip' + (on ? ' on' : '');
+  link.href = '?' + q;
+  link.textContent = label;
+  $('styles').appendChild(link);
+}
+if (LOOK) {
+  const grain = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .45  0 0 0 0 .35  0 0 0 .55 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>`;
+  $('paper').style.backgroundImage = `url("data:image/svg+xml;utf8,${grain}")`;
+  $('paper').hidden = false;
 }
 
 async function boot() {

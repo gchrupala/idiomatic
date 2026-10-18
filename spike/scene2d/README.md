@@ -21,3 +21,16 @@ Open `spike/scene2d/index.html` from a web server at the repo root (it loads
 - The camera is the SVG viewBox, eased between shots: the city, Lucía's
   block of flats, then the kitchen.
 - `?maxdt=0.1` lets headless tests on slow machines run in scene time.
+
+## Variants (URL parameters)
+
+- `style=ink` (default): rough.js outlines in dark ink over flat colour,
+  with line boil (three wobbly copies of every shape, cycled 8 times a second).
+- `style=crayon`: hatched colour-pencil fills, coloured edges, and held
+  frames at 12 fps (`fps=12`), like hand animation.
+- `style=flat`: clean vector shapes.
+- `motion=peppa` (default): quick clean turns, small fast steps, little
+  bounce, head rocking while talking. `motion=springy`: the first version,
+  with more overshoot and bounce.
+
+rough.js 4.6.6 is vendored in `vendor/` (MIT).
