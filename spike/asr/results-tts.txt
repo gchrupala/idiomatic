@@ -1,0 +1,16 @@
+tiny   fa clean n=156+12 rtf=0.08 | T=0.0: right 83% wrong 17% oos-accept 100% | T=0.5: right 61% wrong 4% oos-accept 0% | T=0.6: right 42% wrong 1% oos-accept 0% | T=0.7: right 23% wrong 1% oos-accept 0%
+tiny   fa noisy n=156+12 rtf=0.08 | T=0.0: right 83% wrong 17% oos-accept 100% | T=0.5: right 52% wrong 5% oos-accept 0% | T=0.6: right 32% wrong 1% oos-accept 0% | T=0.7: right 15% wrong 1% oos-accept 0%
+tiny   es clean n=64+8 rtf=0.06 | T=0.0: right 100% wrong 0% oos-accept 100% | T=0.5: right 95% wrong 0% oos-accept 0% | T=0.6: right 92% wrong 0% oos-accept 0% | T=0.7: right 80% wrong 0% oos-accept 0%
+tiny   es noisy n=64+8 rtf=0.06 | T=0.0: right 98% wrong 2% oos-accept 100% | T=0.5: right 95% wrong 0% oos-accept 0% | T=0.6: right 92% wrong 0% oos-accept 0% | T=0.7: right 89% wrong 0% oos-accept 0%
+base   fa clean n=156+12 rtf=0.12 | T=0.0: right 87% wrong 13% oos-accept 100% | T=0.5: right 68% wrong 5% oos-accept 0% | T=0.6: right 40% wrong 1% oos-accept 0% | T=0.7: right 20% wrong 0% oos-accept 0%
+base   fa noisy n=156+12 rtf=0.12 | T=0.0: right 87% wrong 13% oos-accept 100% | T=0.5: right 66% wrong 4% oos-accept 0% | T=0.6: right 40% wrong 1% oos-accept 0% | T=0.7: right 24% wrong 0% oos-accept 0%
+base   es clean n=64+8 rtf=0.10 | T=0.0: right 97% wrong 3% oos-accept 100% | T=0.5: right 94% wrong 2% oos-accept 0% | T=0.6: right 91% wrong 0% oos-accept 0% | T=0.7: right 91% wrong 0% oos-accept 0%
+base   es noisy n=64+8 rtf=0.10 | T=0.0: right 97% wrong 3% oos-accept 100% | T=0.5: right 94% wrong 2% oos-accept 0% | T=0.6: right 89% wrong 0% oos-accept 0% | T=0.7: right 88% wrong 0% oos-accept 0%
+small  fa clean n=156+12 rtf=0.39 | T=0.0: right 88% wrong 12% oos-accept 100% | T=0.5: right 74% wrong 5% oos-accept 0% | T=0.6: right 56% wrong 3% oos-accept 0% | T=0.7: right 35% wrong 3% oos-accept 0%
+small  fa noisy n=156+12 rtf=0.39 | T=0.0: right 85% wrong 15% oos-accept 100% | T=0.5: right 68% wrong 4% oos-accept 0% | T=0.6: right 51% wrong 1% oos-accept 0% | T=0.7: right 31% wrong 1% oos-accept 0%
+small  es clean n=64+8 rtf=0.31 | T=0.0: right 98% wrong 2% oos-accept 100% | T=0.5: right 98% wrong 2% oos-accept 0% | T=0.6: right 94% wrong 2% oos-accept 0% | T=0.7: right 91% wrong 0% oos-accept 0%
+small  es noisy n=64+8 rtf=0.30 | T=0.0: right 100% wrong 0% oos-accept 100% | T=0.5: right 100% wrong 0% oos-accept 0% | T=0.6: right 97% wrong 0% oos-accept 0% | T=0.7: right 95% wrong 0% oos-accept 0%
+turbo  fa clean n=156+12 rtf=0.51 | T=0.0: right 88% wrong 12% oos-accept 100% | T=0.5: right 78% wrong 4% oos-accept 0% | T=0.6: right 65% wrong 3% oos-accept 0% | T=0.7: right 47% wrong 1% oos-accept 0%
+turbo  fa noisy n=156+12 rtf=0.50 | T=0.0: right 90% wrong 10% oos-accept 100% | T=0.5: right 79% wrong 4% oos-accept 0% | T=0.6: right 64% wrong 3% oos-accept 0% | T=0.7: right 42% wrong 1% oos-accept 0%
+turbo  es clean n=64+8 rtf=0.47 | T=0.0: right 100% wrong 0% oos-accept 100% | T=0.5: right 98% wrong 0% oos-accept 0% | T=0.6: right 97% wrong 0% oos-accept 0% | T=0.7: right 94% wrong 0% oos-accept 0%
+turbo  es noisy n=64+8 rtf=0.46 | T=0.0: right 97% wrong 3% oos-accept 100% | T=0.5: right 97% wrong 3% oos-accept 0% | T=0.6: right 86% wrong 0% oos-accept 0% | T=0.7: right 84% wrong 0% oos-accept 0%
