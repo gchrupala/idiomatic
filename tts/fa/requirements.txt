@@ -1,0 +1,8 @@
+torch
+transformers
+accelerate
+datasets<4  # espnet/yodas loads through a dataset script, which datasets 4 dropped
+huggingface_hub[cli]
+snac
+soundfile>=0.12  # bundles libsndfile with MP3 support
+numpy

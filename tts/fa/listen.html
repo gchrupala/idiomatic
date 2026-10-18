@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Persian TTS samples</title>
+<style>
+  :root { --bg: #fbfaf7; --fg: #1d1b18; --muted: #6d675e; --line: #e4dfd6; --bad: #b3261e; --ok: #2e7d32; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1b1a18; --fg: #ece8e1; --muted: #a39d93; --line: #34312c; --bad: #ef8a80; --ok: #8bc48e; } }
+  body { margin: 0 auto; max-width: 760px; padding: 16px; background: var(--bg); color: var(--fg); font: 16px/1.45 system-ui, sans-serif; }
+  nav button { font: inherit; padding: 6px 12px; margin: 0 6px 6px 0; border: 1px solid var(--line); border-radius: 6px; background: none; color: inherit; }
+  nav button.on { border-color: var(--fg); }
+  .row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .row button { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: none; color: inherit; font-size: 18px; }
+  .latin { font-weight: 600; }
+  .fa { direction: rtl; color: var(--muted); font-size: 15px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .bad { color: var(--bad); } .ok { color: var(--ok); }
+</style>
+</head>
+<body>
+<h1>Persian TTS samples</h1>
+<p class="meta">Chapter 1 rendered by each engine, and samples from the candidate datasets. Tap a line to play it. CER is Whisper's round-trip error against the text; a high one is worth a listen.</p>
+<nav id="tabs"></nav>
+<div id="list"></div>
+<script>
+const SOURCES = { aava: "out/aava/manifest.json", datasets: "out/survey/summary.json" };
+const tabs = document.getElementById("tabs"), list = document.getElementById("list");
+const player = new Audio();
+
+function row(file, main, sub, meta) {
+  const r = document.createElement("div"); r.className = "row";
+  const b = document.createElement("button"); b.textContent = "▶"; b.onclick = () => { player.src = "out/" + file; player.play(); };
+  const t = document.createElement("div");
+  t.innerHTML = `<div class="latin"></div><div class="fa"></div><div class="meta"></div>`;
+  t.children[0].textContent = main; t.children[1].textContent = sub || ""; t.children[2].innerHTML = meta || "";
+  r.append(b, t); return r;
+}
+
+async function show(name) {
+  [...tabs.children].forEach(b => b.classList.toggle("on", b.textContent === name));
+  list.textContent = "Loading…";
+  let data;
+  try { data = await (await fetch(SOURCES[name])).json(); }
+  catch { list.textContent = "Not rendered yet."; return; }
+  list.textContent = "";
+  if (name === "datasets") {
+    for (const [ds, s] of Object.entries(data)) {
+      const h = document.createElement("h2"); h.textContent = ds; list.append(h);
+      const p = document.createElement("p"); p.className = "meta";
+      p.textContent = s.error ? s.error : `${s.hours} h${s.partial ? " (one part)" : ""}, ${s.clips} clips, clip length p10/p50/p90 ${s.secs_p10_p50_p90.join(" / ")} s`;
+      list.append(p);
+      for (const x of s.samples || []) list.append(row(x.file, x.text, "", `${x.secs} s · ${x.rate} Hz`));
+    }
+    return;
+  }
+  for (const m of data) {
+    const cer = m.cer == null ? "" : `<span class="${m.cer > 0.15 ? "bad" : "ok"}">CER ${m.cer}</span> · heard: <span dir="rtl"></span>`;
+    const r = row(m.file, m.latin, m.script, `${m.who} · take ${m.take + 1} · ${cer}`);
+    const heard = r.querySelector(".meta span[dir]"); if (heard) heard.textContent = m.asr;
+    list.append(r);
+  }
+}
+
+for (const name of Object.keys(SOURCES)) {
+  const b = document.createElement("button"); b.textContent = name; b.onclick = () => show(name); tabs.append(b);
+}
+show("aava");
+</script>
+</body>
+</html>
