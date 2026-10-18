@@ -5,7 +5,7 @@ Can the app tell which of a card's four answers a learner said, in Tehrani collo
 - `items.json`: 13 Persian and 8 Spanish answer sets (the four answers of one card), and 4 sentences per language that are not on their card, to test rejection.
 - `make_audio.py`: speaks every answer with Piper voices (3 Persian, 2 Spanish), clean and with noise.
 - `score.py`: transcribes with Whisper (sherpa-onnx, int8) and matches to the answers.
-- `web/index.html`: a test page for the browser's own speech recognition and for recording your voice. `own_voice.py` turns its download into audio for `score.py`.
+- `web/index.html`: a one-button test session (about 3 minutes): 3 Spanish and 3 Persian phrases through the browser's own recogniser, then 15 Persian phrases recorded for Whisper. It moves on by itself when you stop speaking and downloads a results file at the end. `own_voice.py` turns that file into audio for `score.py`.
 
 Models come from the sherpa-onnx GitHub releases (`asr-models/sherpa-onnx-whisper-*`, `tts-models/vits-piper-*`). Install with `pip install sherpa-onnx soundfile numpy rapidfuzz`.
 

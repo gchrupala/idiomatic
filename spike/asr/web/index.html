@@ -5,53 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Speech test</title>
 <style>
-  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --ok: #1a7f37; --bad: #c62828; --accent: #0a58ca; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #f2f2f2; --muted: #a0a0a5; --line: #3a3a3c; --ok: #4ac26b; --bad: #ff6b6b; --accent: #6ea8fe; } }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.45 system-ui, sans-serif; }
-  main { max-width: 640px; margin: 0 auto; padding: 16px; }
+  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --accent: #0a58ca; --rec: #c62828; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #f2f2f2; --muted: #a0a0a5; --line: #3a3a3c; --accent: #6ea8fe; --rec: #ff6b6b; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.45 system-ui, sans-serif; }
+  main { max-width: 560px; margin: 0 auto; padding: 16px; }
   h1 { font-size: 1.3rem; }
   .muted { color: var(--muted); font-size: .9rem; }
-  .opts { display: grid; gap: 8px; margin: 16px 0; }
-  .opt { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 1.25rem; }
-  .opt.target { border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
-  .opt.picked.right { background: color-mix(in srgb, var(--ok) 18%, transparent); }
-  .opt.picked.wrong { background: color-mix(in srgb, var(--bad) 18%, transparent); }
-  .script { font-family: Vazirmatn, Tahoma, sans-serif; font-size: 1rem; color: var(--muted); }
-  .say { font-size: 1.4rem; margin: 12px 0; }
-  button, select { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  pre { white-space: pre-wrap; font-size: .85rem; }
+  button { font: inherit; font-size: 1.1rem; padding: 12px 22px; border-radius: 10px; border: 0; background: var(--accent); color: #fff; }
+  #phrase { border: 2px solid var(--line); border-radius: 14px; padding: 22px 16px; text-align: center; margin: 18px 0; min-height: 5.5rem; }
+  #phrase.listening { border-color: var(--rec); }
+  #say { font-size: 1.8rem; font-weight: 600; }
+  #script { font-family: Vazirmatn, Tahoma, sans-serif; font-size: 1.1rem; color: var(--muted); margin-top: 6px; }
+  #state { font-weight: 600; min-height: 1.5em; }
+  #phrase.listening + #state { color: var(--rec); }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0; background: var(--accent); transition: width .3s; }
 </style>
 </head>
 <body>
 <main>
   <h1>Speech test</h1>
-  <p class="muted">Tap Speak, say the highlighted answer (or the sentence under "Say"), then tap Stop. "Browser recognition" tests the browser's own recogniser. "Record for Whisper" only records your voice, for testing with Whisper afterwards. Phones can't do both at once. Nothing is sent anywhere except what the browser's own recogniser sends.</p>
-  <div class="row">
-    <label>Language <select id="lang"><option value="fa">Persian (fa-IR)</option><option value="es">Spanish (es-ES)</option></select></label>
-    <label>Test <select id="mode"><option value="browser">Browser recognition</option><option value="record">Record for Whisper</option></select></label>
-    <label id="local-label"><input type="checkbox" id="local"> On-device only</label>
+  <div id="intro">
+    <p>This takes about three minutes. A phrase appears; say it once, clearly, then wait. The page notices when you stop and moves on by itself. Some phrases are Spanish, most are Persian.</p>
+    <p class="muted">Allow the microphone when asked. For the first 6 phrases Chrome's own recogniser listens, which sends the audio to Google. For the rest the page only records, and nothing leaves the phone until you send the file.</p>
+    <button id="start">Start</button>
   </div>
-  <p class="muted" id="support"></p>
-  <div id="card">
+  <div id="run" hidden>
+    <div class="bar"><div id="bar"></div></div>
     <p class="muted" id="progress"></p>
-    <div class="say" id="say"></div>
-    <div class="opts" id="opts"></div>
-    <div class="row">
-      <button class="primary" id="rec">Speak</button>
-      <button id="skip">Skip</button>
-    </div>
-    <p id="heard"></p>
+    <div id="phrase"><div id="say"></div><div id="script" dir="rtl"></div></div>
+    <p id="state"></p>
   </div>
-  <h2>Results</h2>
-  <p id="summary" class="muted">No answers yet.</p>
-  <div class="row"><button id="download">Download results and recordings</button></div>
-  <pre id="log"></pre>
+  <div id="done" hidden>
+    <p><b>Done, thank you.</b> The results file should have downloaded. If not, tap the button, then send the file in the thread.</p>
+    <button id="download">Download results</button>
+  </div>
 </main>
 <script>
-// Test items: the same as items.json. Each group is the four answers of one card.
 const ITEMS = {"fa": {"groups": [["خوبم، مرسی", "سلام، چطوری؟", "خداحافظ", "ببخشید"], ["نون", "پنیر", "چایی", "برنج"], ["میرم مدرسه", "میرم خونه", "میرم بازار", "میرم پارک"], ["دو تا", "سه تا", "ده تا", "دوازده تا"], ["مامانم", "بابام", "داداشم", "خواهرم"], ["ساعت هشت", "ساعت ده", "ساعت یازده", "ساعت چهار"], ["قابل نداره", "دستت درد نکنه", "خواهش می‌کنم", "بفرمایید"], ["یه کیلو سیب می‌خوام", "یه نون می‌خوام", "یه چایی می‌خوام", "یه بلیط می‌خوام"], ["کتابو بده", "کلیدو بده", "کیفو بده", "کفشو بده"], ["دارم می‌خونم", "دارم می‌خورم", "دارم می‌رم", "دارم می‌خوابم"], ["هوا سرده", "هوا گرمه", "بارون میاد", "برف میاد"], ["مستقیم برید", "دست راست", "دست چپ", "همین‌جا نگه دارید"], ["از تهرانم", "از شیرازم", "از اصفهانم", "از تبریزم"]], "out_of_set": [["من یه گربه دارم", 1], ["فردا می‌بینمت", 4], ["خیلی گشنمه", 10], ["تلفنم کجاست؟", 8]], "latin": {"خوبم، مرسی": "xubam, mersi", "سلام، چطوری؟": "salām, cetori?", "خداحافظ": "xodāhāfez", "ببخشید": "bebaxšid", "نون": "nun", "پنیر": "panir", "چایی": "cāyi", "برنج": "berenj", "میرم مدرسه": "miram madrese", "میرم خونه": "miram xune", "میرم بازار": "miram bāzār", "میرم پارک": "miram pārk", "دو تا": "do tā", "سه تا": "se tā", "ده تا": "dah tā", "دوازده تا": "davāzdah tā", "مامانم": "māmānam", "بابام": "bābām", "داداشم": "dādāšam", "خواهرم": "xāharam", "ساعت هشت": "sā'at hašt", "ساعت ده": "sā'at dah", "ساعت یازده": "sā'at yāzdah", "ساعت چهار": "sā'at cahār", "قابل نداره": "qābel nadāre", "دستت درد نکنه": "dastet dard nakone", "خواهش می‌کنم": "xāheš mikonam", "بفرمایید": "befarmāyid", "یه کیلو سیب می‌خوام": "ye kilo sib mixām", "یه نون می‌خوام": "ye nun mixām", "یه چایی می‌خوام": "ye cāyi mixām", "یه بلیط می‌خوام": "ye belit mixām", "کتابو بده": "ketābo bede", "کلیدو بده": "kelido bede", "کیفو بده": "kifo bede", "کفشو بده": "kafšo bede", "دارم می‌خونم": "dāram mixunam", "دارم می‌خورم": "dāram mixoram", "دارم می‌رم": "dāram miram", "دارم می‌خوابم": "dāram mixābam", "هوا سرده": "havā sarde", "هوا گرمه": "havā garme", "بارون میاد": "bārun miyād", "برف میاد": "barf miyād", "مستقیم برید": "mostaqim berid", "دست راست": "dast-e rāst", "دست چپ": "dast-e cap", "همین‌جا نگه دارید": "haminjā negah dārid", "از تهرانم": "az tehrānam", "از شیرازم": "az širāzam", "از اصفهانم": "az esfahānam", "از تبریزم": "az tabrizam", "من یه گربه دارم": "man ye gorbe dāram", "فردا می‌بینمت": "fardā mibinamet", "خیلی گشنمه": "xeyli gošname", "تلفنم کجاست؟": "telefonam kojāst?"}}, "es": {"groups": [["Vale, nos vemos luego.", "¿Me pones un café, por favor?", "¿Qué tal estáis?", "No pasa nada."], ["Un café con leche.", "Una caña.", "Un bocadillo.", "Una tostada."], ["Hoy he comido paella.", "Hoy he ido al cole.", "Hoy he visto a mi tía.", "Hoy he jugado al fútbol."], ["A las ocho.", "A las nueve.", "A las diez.", "A las once."], ["El móvil.", "El coche.", "El ordenador.", "Las gafas."], ["Estoy cansado.", "Estoy cansada.", "Estoy contento.", "Estoy harto."], ["Gira a la derecha.", "Gira a la izquierda.", "Sigue todo recto.", "Para aquí."], ["¿Vosotros venís?", "¿Nosotros vamos?", "¿Ellos vienen?", "¿Tú vienes?"]], "out_of_set": [["Me gusta el chocolate.", 3], ["Mañana es lunes.", 6], ["Tengo un perro.", 4], ["¿Dónde está el baño?", 1]]}};
+
+// The session: Chrome's recogniser on a few phrases, then recordings for Whisper.
+const PLAN = [
+  { mode: 'browser', lang: 'es', texts: ['Un café con leche.', 'Gira a la derecha.', 'Hoy he comido paella.'] },
+  { mode: 'browser', lang: 'fa', texts: ['هوا سرده', 'میرم خونه', 'دستت درد نکنه'] },
+  { mode: 'record', lang: 'fa', texts: ['خوبم، مرسی', 'چایی', 'میرم بازار', 'سه تا', 'داداشم', 'ساعت هشت', 'قابل نداره',
+    'یه نون می‌خوام', 'کلیدو بده', 'دارم می‌خورم', 'بارون میاد', 'دست چپ', 'از شیرازم', 'خیلی گشنمه', 'فردا می‌بینمت'] },
+];
 
 const NUM = {
   fa: 'صفر یک دو سه چهار پنج شش هفت هشت نه ده یازده دوازده'.split(' '),
@@ -79,7 +78,6 @@ function lev(a, b) {
 }
 const sim = (a, b) => 1 - lev(a, b) / Math.max(a.length, b.length, 1);
 const THRESHOLD = 0.6;
-
 // Best answer over all the recogniser's alternatives.
 function match(alternatives, cands, lang) {
   let best = { score: -1 };
@@ -92,151 +90,128 @@ function match(alternatives, cands, lang) {
   return best;
 }
 
+
+
 const $ = (id) => document.getElementById(id);
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let lang = 'fa', queue = [], pos = 0, results = [], recorder = null, chunks = [], stream = null;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const results = [];
+let stream = null, audioCtx = null;
 
-function buildQueue() {
-  const d = ITEMS[lang];
-  queue = d.groups.flatMap((g, gi) => g.map((text) => ({ text, group: gi, inSet: true })));
-  queue.push(...d.out_of_set.map(([text, gi]) => ({ text, group: gi, inSet: false })));
-  for (let i = queue.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }
-  pos = 0;
+function groupOf(lang, text) {
+  const g = ITEMS[lang].groups.findIndex((g) => g.includes(text));
+  if (g >= 0) return { group: g, inSet: true };
+  return { group: ITEMS[lang].out_of_set.find(([t]) => t === text)[1], inSet: false };
 }
 
-// Persian is shown in the Latin transcription of the perski word list, with the script below it.
-function label(text) {
-  const span = document.createElement('span');
-  const lat = lang === 'fa' && ITEMS.fa.latin[text];
-  if (!lat) { span.textContent = text; return span; }
-  span.innerHTML = '<div></div><div class="script" dir="rtl"></div>';
-  span.children[0].textContent = lat;
-  span.children[1].textContent = text;
-  return span;
+function showPhrase(lang, text) {
+  $('say').textContent = lang === 'fa' ? ITEMS.fa.latin[text] : text;
+  $('script').textContent = lang === 'fa' ? text : '';
 }
+const setState = (s, listening) => { $('state').textContent = s; $('phrase').classList.toggle('listening', !!listening); };
 
-function show() {
-  const item = queue[pos];
-  $('progress').textContent = item ? `${pos + 1} / ${queue.length}` : 'All done.';
-  $('heard').textContent = '';
-  $('opts').innerHTML = '';
-  $('say').innerHTML = '';
-  if (item && !item.inSet) { $('say').append('Say: '); $('say').append(label(item.text)); }
-  if (!item) return;
-  ITEMS[lang].groups[item.group].forEach((c) => {
-    const el = document.createElement('div');
-    el.className = 'opt' + (item.inSet && c === item.text ? ' target' : '');
-    el.append(label(c));
-    $('opts').append(el);
+// Chrome's recogniser: it stops by itself after a pause; give up after 8 s.
+function recognise(lang) {
+  return new Promise((resolve) => {
+    const out = { alts: [], events: [], error: null, final: false };
+    if (!SR) { out.error = 'no SpeechRecognition'; return resolve(out); }
+    const t0 = performance.now();
+    const log = (name) => out.events.push(`${name}@${Math.round(performance.now() - t0)}`);
+    const r = new SR();
+    r.lang = lang === 'fa' ? 'fa-IR' : 'es-ES';
+    r.maxAlternatives = 5;
+    r.interimResults = true;
+    for (const ev of ['start', 'audiostart', 'soundstart', 'speechstart', 'speechend', 'soundend', 'audioend', 'nomatch']) r.addEventListener(ev, () => log(ev));
+    r.onresult = (e) => {
+      const res = e.results[e.results.length - 1];
+      const alts = [...res].map((a) => a.transcript);
+      log(`${res.isFinal ? 'final' : 'partial'}:${alts[0]}`);
+      if (res.isFinal || !out.final) { out.alts = alts; out.final = res.isFinal; }
+    };
+    r.onerror = (e) => { out.error = e.error; log(`error:${e.error}`); };
+    const timer = setTimeout(() => { log('timeout'); r.stop(); }, 8000);
+    r.onend = () => { clearTimeout(timer); log('end'); resolve(out); };
+    try { r.start(); } catch (e) { out.error = String(e); resolve(out); }
   });
 }
 
-async function checkSupport() {
-  if (!SR) { $('support').textContent = 'This browser has no speech recognition, so only recording for the Whisper test works.'; return; }
-  let msg = 'Speech recognition is available.';
-  if (SR.available) {
-    try {
-      const st = await SR.available({ langs: [lang === 'fa' ? 'fa-IR' : 'es-ES'], processLocally: true });
-      msg += ` On-device model for this language: ${st}.`;
-      if (st === 'downloadable' && SR.install) msg += ' Tick "On-device only" and speak once to install it.';
-    } catch (e) { msg += ' (Could not check the on-device model.)'; }
-  } else msg += ' This browser cannot recognise on the device, so audio goes to its speech service.';
-  $('support').textContent = msg;
-}
-
-const mode = () => (SR ? $('mode').value : 'record');
-let active = null; // the item being answered, while listening or recording
-
-async function startRec() {
-  const item = queue[pos];
-  if (!item || active) return;
-  active = item;
-  item.t0 = performance.now();
-  setButton('Stop');
-  if (mode() === 'record') {
-    try { stream = stream || (await navigator.mediaDevices.getUserMedia({ audio: true })); } catch (e) { item.error = 'no microphone access'; return finish(item); }
-    chunks = [];
-    recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = (e) => chunks.push(e.data);
-    recorder.onstop = () => { item.blob = new Blob(chunks, { type: recorder.mimeType }); finish(item); };
-    recorder.start();
-    return;
+// Records until 0.9 s of quiet after speech, or 7 s at most.
+async function record() {
+  stream = stream || (await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }));
+  audioCtx = audioCtx || new AudioContext();
+  const src = audioCtx.createMediaStreamSource(stream);
+  const an = audioCtx.createAnalyser();
+  an.fftSize = 1024;
+  src.connect(an);
+  const buf = new Float32Array(an.fftSize);
+  const level = () => { an.getFloatTimeDomainData(buf); return Math.sqrt(buf.reduce((s, x) => s + x * x, 0) / buf.length); };
+  const chunks = [];
+  const rec = new MediaRecorder(stream);
+  rec.ondataavailable = (e) => chunks.push(e.data);
+  const stopped = new Promise((r) => (rec.onstop = r));
+  rec.start();
+  let noise = 0;
+  for (let i = 0; i < 6; i++) { await sleep(50); noise = Math.max(noise, level()); }
+  const threshold = Math.max(noise * 3, 0.015);
+  const t0 = performance.now();
+  let spoke = false, quietSince = null;
+  while (performance.now() - t0 < 7000) {
+    await sleep(50);
+    const loud = level() > threshold;
+    if (loud) { spoke = true; quietSince = null; } else if (spoke && quietSince === null) quietSince = performance.now();
+    if (spoke && quietSince && performance.now() - quietSince > 900) break;
+    if (!spoke && performance.now() - t0 > 5000) break;
   }
-  const r = new SR();
-  r.lang = lang === 'fa' ? 'fa-IR' : 'es-ES';
-  r.maxAlternatives = 5;
-  r.interimResults = true; // a final result sometimes never comes; keep the last partial one
-  item.events = [];
-  const log = (name) => item.events.push(`${name}@${Math.round(performance.now() - item.t0)}`);
-  for (const ev of ['start', 'audiostart', 'soundstart', 'speechstart', 'speechend', 'soundend', 'audioend', 'nomatch']) r.addEventListener(ev, () => log(ev));
-  if ($('local').checked && 'processLocally' in r) {
-    r.processLocally = true;
-    if (SR.install) { try { await SR.install({ langs: [r.lang], processLocally: true }); } catch (e) {} }
+  rec.stop();
+  await stopped;
+  src.disconnect();
+  return { blob: new Blob(chunks, { type: rec.mimeType }), spoke };
+}
+
+async function run() {
+  $('intro').hidden = true;
+  $('run').hidden = false;
+  const total = PLAN.reduce((n, p) => n + p.texts.length, 0);
+  let n = 0;
+  for (const part of PLAN) {
+    for (const text of part.texts) {
+      n++;
+      $('progress').textContent = `${n} / ${total}`;
+      $('bar').style.width = `${(100 * (n - 1)) / total}%`;
+      showPhrase(part.lang, text);
+      setState('Get ready…');
+      await sleep(1200);
+      setState('Speak now', true);
+      const { group, inSet } = groupOf(part.lang, text);
+      const row = { mode: part.mode, lang: part.lang, text, group, in_set: inSet };
+      if (part.mode === 'browser') {
+        const r = await recognise(part.lang);
+        const m = match(r.alts, ITEMS[part.lang].groups[group], part.lang);
+        Object.assign(row, { alternatives: r.alts, final: r.final, error: r.error, events: r.events,
+          best: m.score >= THRESHOLD ? ITEMS[part.lang].groups[group][m.index] : null, score: m.score });
+        setState(r.alts.length ? `Heard: ${r.alts[0]}` : 'Nothing recognised');
+      } else {
+        try {
+          const r = await record();
+          Object.assign(row, { spoke: r.spoke, blob: r.blob });
+          setState(r.spoke ? 'Recorded' : 'No speech heard');
+        } catch (e) { row.error = String(e); setState('Microphone problem: ' + e); }
+      }
+      results.push(row);
+      await sleep(700);
+    }
   }
-  r.onresult = (e) => {
-    const res = e.results[e.results.length - 1];
-    const alts = [...res].map((a) => a.transcript);
-    log(res.isFinal ? `final:${alts[0]}` : `partial:${alts[0]}`);
-    if (res.isFinal || !item.final) { item.alts = alts; item.final = res.isFinal; item.secs = (performance.now() - item.t0) / 1000; }
-  };
-  r.onerror = (e) => { item.error = e.error; log(`error:${e.error}`); };
-  r.onend = () => { log('end'); finish(item); }; // also fires by itself after a pause in speech
-  item.recog = r;
-  try { r.start(); } catch (e) { item.error = String(e); finish(item); }
-}
-
-function stopRec() {
-  const item = active;
-  if (!item) return;
-  setButton('Checking…');
-  if (item.recog) { item.events?.push(`stop-tapped@${Math.round(performance.now() - item.t0)}`); item.recog.stop(); }
-  else if (recorder && recorder.state !== 'inactive') recorder.stop();
-}
-
-function finish(item) {
-  if (active !== item) return;
-  active = null;
-  setButton('Speak');
-  grade(item);
-}
-
-function setButton(label) { $('rec').textContent = label; }
-
-function grade(item) {
-  const cands = ITEMS[lang].groups[item.group];
-  const alts = item.alts || [];
-  const m = match(alts, cands, lang);
-  const accepted = m.score >= THRESHOLD;
-  const outcome = mode() === 'record' && !item.error ? 'recorded'
-    : !item.inSet ? (accepted ? 'false accept' : 'rejected (correct)')
-    : !accepted ? 'not recognised' : cands[m.index] === item.text ? 'right' : 'wrong answer';
-  const opts = [...$('opts').children];
-  if (accepted) opts[m.index].classList.add('picked', cands[m.index] === item.text && item.inSet ? 'right' : 'wrong');
-  $('heard').textContent = outcome === 'recorded' ? 'Recorded.'
-    : (item.error ? `Error: ${item.error}. ` : '') + `Heard: ${alts[0] ?? '(nothing)'} → ${outcome} (score ${m.score.toFixed(2)})`
-      + (alts.length ? '' : ` · events: ${(item.events || []).join(' ')}`);
-  results.push({ mode: mode(), lang, text: item.text, group: item.group, in_set: item.inSet, alternatives: alts, best: accepted ? cands[m.index] : null, score: m.score, outcome, events: item.events ?? null, final: item.final ?? null, secs: item.secs ?? null, error: item.error ?? null, local: $('local').checked, blob: item.blob });
-  summarise();
-  setTimeout(() => { pos++; show(); }, outcome === 'not recognised' ? 4000 : 1500);
-}
-
-function summarise() {
-  const lines = ['fa', 'es'].map((l) => {
-    const r = results.filter((x) => x.lang === l);
-    if (!r.length) return null;
-    const c = (o) => r.filter((x) => x.outcome === o).length;
-    if (r.every((x) => x.outcome === 'recorded')) return `${l}: ${r.length} recorded`;
-    return `${l}: ${c('right')} right, ${c('wrong answer')} wrong, ${c('not recognised')} not recognised, ${c('rejected (correct)')} of ${r.filter((x) => !x.in_set).length} out-of-set rejected`;
-  }).filter(Boolean);
-  $('summary').textContent = lines.join(' · ') || 'No answers yet.';
-  $('log').textContent = results.slice(-5).map((x) => `${x.text} | ${x.alternatives[0] ?? ''} | ${x.outcome}`).join('\n');
+  $('bar').style.width = '100%';
+  $('run').hidden = true;
+  $('done').hidden = false;
+  download();
 }
 
 async function download() {
   const out = [];
   for (const x of results) {
     const audio = x.blob ? await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(x.blob); }) : null;
-    out.push({ ...x, blob: undefined, audio, user_agent: navigator.userAgent });
+    out.push({ ...x, blob: undefined, audio, alternatives: x.alternatives ?? [], user_agent: navigator.userAgent });
   }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(out)], { type: 'application/json' }));
@@ -244,14 +219,8 @@ async function download() {
   a.click();
 }
 
-const rec = $('rec');
-rec.onclick = () => (active ? stopRec() : startRec());
-$('mode').onchange = () => { $('local-label').hidden = mode() === 'record'; };
-$('skip').onclick = () => { if (!active) { pos++; show(); } };
+$('start').onclick = run;
 $('download').onclick = download;
-$('lang').onchange = (e) => { lang = e.target.value; buildQueue(); show(); checkSupport(); };
-if (!SR) { $('mode').value = 'record'; $('mode').disabled = true; $('local-label').hidden = true; }
-buildQueue(); show(); checkSupport();
 </script>
 </body>
 </html>
