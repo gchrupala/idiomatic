@@ -1,0 +1,43 @@
+{
+  "fa": {
+    "groups": [
+      ["خوبم، مرسی", "سلام، چطوری؟", "خداحافظ", "ببخشید"],
+      ["نون", "پنیر", "چایی", "برنج"],
+      ["میرم مدرسه", "میرم خونه", "میرم بازار", "میرم پارک"],
+      ["دو تا", "سه تا", "ده تا", "دوازده تا"],
+      ["مامانم", "بابام", "داداشم", "خواهرم"],
+      ["ساعت هشت", "ساعت ده", "ساعت یازده", "ساعت چهار"],
+      ["قابل نداره", "دستت درد نکنه", "خواهش می‌کنم", "بفرمایید"],
+      ["یه کیلو سیب می‌خوام", "یه نون می‌خوام", "یه چایی می‌خوام", "یه بلیط می‌خوام"],
+      ["کتابو بده", "کلیدو بده", "کیفو بده", "کفشو بده"],
+      ["دارم می‌خونم", "دارم می‌خورم", "دارم می‌رم", "دارم می‌خوابم"],
+      ["هوا سرده", "هوا گرمه", "بارون میاد", "برف میاد"],
+      ["مستقیم برید", "دست راست", "دست چپ", "همین‌جا نگه دارید"],
+      ["از تهرانم", "از شیرازم", "از اصفهانم", "از تبریزم"]
+    ],
+    "out_of_set": [
+      ["من یه گربه دارم", 1],
+      ["فردا می‌بینمت", 4],
+      ["خیلی گشنمه", 10],
+      ["تلفنم کجاست؟", 8]
+    ]
+  },
+  "es": {
+    "groups": [
+      ["Vale, nos vemos luego.", "¿Me pones un café, por favor?", "¿Qué tal estáis?", "No pasa nada."],
+      ["Un café con leche.", "Una caña.", "Un bocadillo.", "Una tostada."],
+      ["Hoy he comido paella.", "Hoy he ido al cole.", "Hoy he visto a mi tía.", "Hoy he jugado al fútbol."],
+      ["A las ocho.", "A las nueve.", "A las diez.", "A las once."],
+      ["El móvil.", "El coche.", "El ordenador.", "Las gafas."],
+      ["Estoy cansado.", "Estoy cansada.", "Estoy contento.", "Estoy harto."],
+      ["Gira a la derecha.", "Gira a la izquierda.", "Sigue todo recto.", "Para aquí."],
+      ["¿Vosotros venís?", "¿Nosotros vamos?", "¿Ellos vienen?", "¿Tú vienes?"]
+    ],
+    "out_of_set": [
+      ["Me gusta el chocolate.", 3],
+      ["Mañana es lunes.", 6],
+      ["Tengo un perro.", 4],
+      ["¿Dónde está el baño?", 1]
+    ]
+  }
+}

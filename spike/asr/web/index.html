@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speech test</title>
+<style>
+  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --ok: #1a7f37; --bad: #c62828; --accent: #0a58ca; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #f2f2f2; --muted: #a0a0a5; --line: #3a3a3c; --ok: #4ac26b; --bad: #ff6b6b; --accent: #6ea8fe; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.45 system-ui, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 1.3rem; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  .opts { display: grid; gap: 8px; margin: 16px 0; }
+  .opt { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 1.25rem; }
+  .opt.target { border: 2px solid var(--accent); }
+  .opt.picked.right { background: color-mix(in srgb, var(--ok) 18%, transparent); }
+  .opt.picked.wrong { background: color-mix(in srgb, var(--bad) 18%, transparent); }
+  [dir=rtl] .opt { font-family: Vazirmatn, Tahoma, sans-serif; }
+  .say { font-size: 1.4rem; margin: 12px 0; }
+  button, select { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  pre { white-space: pre-wrap; font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Speech test</h1>
+  <p class="muted">Say the highlighted answer (or the sentence shown under "Say"). The page checks it with the browser's speech recognition and keeps a recording of your voice, so it can also be tested with Whisper later. Nothing is sent anywhere except what the browser's own recogniser sends.</p>
+  <div class="row">
+    <label>Language <select id="lang"><option value="fa">Persian (fa-IR)</option><option value="es">Spanish (es-ES)</option></select></label>
+    <label><input type="checkbox" id="local"> On-device only</label>
+  </div>
+  <p class="muted" id="support"></p>
+  <div id="card">
+    <p class="muted" id="progress"></p>
+    <div class="say" id="say"></div>
+    <div class="opts" id="opts"></div>
+    <div class="row">
+      <button class="primary" id="rec">Hold to speak</button>
+      <button id="skip">Skip</button>
+    </div>
+    <p id="heard"></p>
+  </div>
+  <h2>Results</h2>
+  <p id="summary" class="muted">No answers yet.</p>
+  <div class="row"><button id="download">Download results and recordings</button></div>
+  <pre id="log"></pre>
+</main>
+<script>
+// Test items: the same as items.json. Each group is the four answers of one card.
+const ITEMS = {"fa": {"groups": [["خوبم، مرسی", "سلام، چطوری؟", "خداحافظ", "ببخشید"], ["نون", "پنیر", "چایی", "برنج"], ["میرم مدرسه", "میرم خونه", "میرم بازار", "میرم پارک"], ["دو تا", "سه تا", "ده تا", "دوازده تا"], ["مامانم", "بابام", "داداشم", "خواهرم"], ["ساعت هشت", "ساعت ده", "ساعت یازده", "ساعت چهار"], ["قابل نداره", "دستت درد نکنه", "خواهش می‌کنم", "بفرمایید"], ["یه کیلو سیب می‌خوام", "یه نون می‌خوام", "یه چایی می‌خوام", "یه بلیط می‌خوام"], ["کتابو بده", "کلیدو بده", "کیفو بده", "کفشو بده"], ["دارم می‌خونم", "دارم می‌خورم", "دارم می‌رم", "دارم می‌خوابم"], ["هوا سرده", "هوا گرمه", "بارون میاد", "برف میاد"], ["مستقیم برید", "دست راست", "دست چپ", "همین‌جا نگه دارید"], ["از تهرانم", "از شیرازم", "از اصفهانم", "از تبریزم"]], "out_of_set": [["من یه گربه دارم", 1], ["فردا می‌بینمت", 4], ["خیلی گشنمه", 10], ["تلفنم کجاست؟", 8]]}, "es": {"groups": [["Vale, nos vemos luego.", "¿Me pones un café, por favor?", "¿Qué tal estáis?", "No pasa nada."], ["Un café con leche.", "Una caña.", "Un bocadillo.", "Una tostada."], ["Hoy he comido paella.", "Hoy he ido al cole.", "Hoy he visto a mi tía.", "Hoy he jugado al fútbol."], ["A las ocho.", "A las nueve.", "A las diez.", "A las once."], ["El móvil.", "El coche.", "El ordenador.", "Las gafas."], ["Estoy cansado.", "Estoy cansada.", "Estoy contento.", "Estoy harto."], ["Gira a la derecha.", "Gira a la izquierda.", "Sigue todo recto.", "Para aquí."], ["¿Vosotros venís?", "¿Nosotros vamos?", "¿Ellos vienen?", "¿Tú vienes?"]], "out_of_set": [["Me gusta el chocolate.", 3], ["Mañana es lunes.", 6], ["Tengo un perro.", 4], ["¿Dónde está el baño?", 1]]}};
+
+const NUM = {
+  fa: 'صفر یک دو سه چهار پنج شش هفت هشت نه ده یازده دوازده'.split(' '),
+  es: 'cero uno dos tres cuatro cinco seis siete ocho nueve diez once doce'.split(' '),
+};
+const FA_MAP = { 'ي': 'ی', 'ى': 'ی', 'ك': 'ک', 'ة': 'ه', 'أ': 'ا', 'إ': 'ا', 'آ': 'ا', 'ؤ': 'و', '‌': '' };
+// Same normalisation as score.py: unify letters, drop vowel marks, accents, spaces and punctuation.
+function norm(s, lang) {
+  s = s.normalize('NFKC').toLowerCase();
+  s = s.replace(/[۰-۹]/g, (d) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
+  if (lang === 'fa') s = [...s].map((c) => FA_MAP[c] ?? c).join('').replace(/[ً-ْٰـ]/g, '');
+  else s = s.normalize('NFD').replace(/\p{Mn}/gu, '');
+  s = s.replace(/\d+/g, (n) => (+n < 13 ? ` ${NUM[lang][+n]} ` : n));
+  return s.replace(/[\p{P}\p{S}\s_]+/gu, '');
+}
+function lev(a, b) {
+  a = [...a]; b = [...b];
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+const sim = (a, b) => 1 - lev(a, b) / Math.max(a.length, b.length, 1);
+const THRESHOLD = 0.6;
+
+// Best answer over all the recogniser's alternatives.
+function match(alternatives, cands, lang) {
+  let best = { score: -1 };
+  for (const alt of alternatives) {
+    cands.forEach((c, i) => {
+      const s = sim(norm(alt, lang), norm(c, lang));
+      if (s > best.score) best = { score: s, index: i, alt };
+    });
+  }
+  return best;
+}
+
+const $ = (id) => document.getElementById(id);
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let lang = 'fa', queue = [], pos = 0, results = [], recorder = null, chunks = [], stream = null;
+
+function buildQueue() {
+  const d = ITEMS[lang];
+  queue = d.groups.flatMap((g, gi) => g.map((text) => ({ text, group: gi, inSet: true })));
+  queue.push(...d.out_of_set.map(([text, gi]) => ({ text, group: gi, inSet: false })));
+  for (let i = queue.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }
+  pos = 0;
+}
+
+function show() {
+  const item = queue[pos];
+  $('card').dir = lang === 'fa' ? 'rtl' : 'ltr';
+  $('progress').textContent = item ? `${pos + 1} / ${queue.length}` : 'All done.';
+  $('heard').textContent = '';
+  $('opts').innerHTML = '';
+  $('say').textContent = item && !item.inSet ? `Say: ${item.text}` : '';
+  if (!item) return;
+  ITEMS[lang].groups[item.group].forEach((c) => {
+    const el = document.createElement('div');
+    el.className = 'opt' + (item.inSet && c === item.text ? ' target' : '');
+    el.textContent = c;
+    $('opts').append(el);
+  });
+}
+
+async function checkSupport() {
+  if (!SR) { $('support').textContent = 'This browser has no speech recognition. Recordings are still kept for the Whisper test.'; return; }
+  let msg = 'Speech recognition is available.';
+  if (SR.available) {
+    try {
+      const st = await SR.available({ langs: [lang === 'fa' ? 'fa-IR' : 'es-ES'], processLocally: true });
+      msg += ` On-device model for this language: ${st}.`;
+      if (st === 'downloadable' && SR.install) msg += ' Tick "On-device only" and speak once to install it.';
+    } catch (e) { msg += ' (Could not check the on-device model.)'; }
+  } else msg += ' This browser cannot recognise on the device, so audio goes to its speech service.';
+  $('support').textContent = msg;
+}
+
+async function startRec() {
+  const item = queue[pos];
+  if (!item) return;
+  try { stream = stream || (await navigator.mediaDevices.getUserMedia({ audio: true })); } catch (e) { $('heard').textContent = 'No microphone access.'; return; }
+  chunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+  recorder.start();
+  const t0 = performance.now();
+  item.t0 = t0;
+  if (!SR) return;
+  const r = new SR();
+  r.lang = lang === 'fa' ? 'fa-IR' : 'es-ES';
+  r.maxAlternatives = 5;
+  r.interimResults = false;
+  if ($('local').checked && 'processLocally' in r) {
+    r.processLocally = true;
+    if (SR.install) { try { await SR.install({ langs: [r.lang], processLocally: true }); } catch (e) {} }
+  }
+  r.onresult = (e) => { item.alts = [...e.results[0]].map((a) => a.transcript); item.secs = (performance.now() - t0) / 1000; };
+  r.onerror = (e) => { item.error = e.error; };
+  item.recog = r;
+  r.start();
+}
+
+function stopRec() {
+  const item = queue[pos];
+  if (!item || !recorder) return;
+  const r = item.recog;
+  recorder.onstop = () => {
+    item.blob = new Blob(chunks, { type: recorder.mimeType });
+    const finish = () => grade(item);
+    if (r) { r.onend = finish; r.stop(); } else finish();
+  };
+  recorder.stop();
+}
+
+function grade(item) {
+  const cands = ITEMS[lang].groups[item.group];
+  const alts = item.alts || [];
+  const m = match(alts, cands, lang);
+  const accepted = m.score >= THRESHOLD;
+  const outcome = !item.inSet ? (accepted ? 'false accept' : 'rejected (correct)')
+    : !accepted ? 'not recognised' : cands[m.index] === item.text ? 'right' : 'wrong answer';
+  const opts = [...$('opts').children];
+  if (accepted) opts[m.index].classList.add('picked', cands[m.index] === item.text && item.inSet ? 'right' : 'wrong');
+  $('heard').textContent = (item.error ? `Error: ${item.error}. ` : '') + `Heard: ${alts[0] ?? '(nothing)'} → ${outcome} (score ${m.score.toFixed(2)})`;
+  results.push({ lang, text: item.text, group: item.group, in_set: item.inSet, alternatives: alts, best: accepted ? cands[m.index] : null, score: m.score, outcome, secs: item.secs ?? null, error: item.error ?? null, local: $('local').checked, blob: item.blob });
+  summarise();
+  setTimeout(() => { pos++; show(); }, 1500);
+}
+
+function summarise() {
+  const lines = ['fa', 'es'].map((l) => {
+    const r = results.filter((x) => x.lang === l);
+    if (!r.length) return null;
+    const c = (o) => r.filter((x) => x.outcome === o).length;
+    return `${l}: ${c('right')} right, ${c('wrong answer')} wrong, ${c('not recognised')} not recognised, ${c('rejected (correct)')} of ${r.filter((x) => !x.in_set).length} out-of-set rejected`;
+  }).filter(Boolean);
+  $('summary').textContent = lines.join(' · ') || 'No answers yet.';
+  $('log').textContent = results.slice(-5).map((x) => `${x.text} | ${x.alternatives[0] ?? ''} | ${x.outcome}`).join('\n');
+}
+
+async function download() {
+  const out = [];
+  for (const x of results) {
+    const audio = x.blob ? await new Promise((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.readAsDataURL(x.blob); }) : null;
+    out.push({ ...x, blob: undefined, audio, user_agent: navigator.userAgent });
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(out)], { type: 'application/json' }));
+  a.download = `speech-test-${new Date().toISOString().slice(0, 16)}.json`;
+  a.click();
+}
+
+const rec = $('rec');
+rec.addEventListener('pointerdown', (e) => { e.preventDefault(); rec.textContent = 'Listening…'; startRec(); });
+rec.addEventListener('pointerup', () => { rec.textContent = 'Hold to speak'; stopRec(); });
+rec.addEventListener('pointerleave', () => { if (rec.textContent !== 'Hold to speak') { rec.textContent = 'Hold to speak'; stopRec(); } });
+$('skip').onclick = () => { pos++; show(); };
+$('download').onclick = download;
+$('lang').onchange = (e) => { lang = e.target.value; buildQueue(); show(); checkSupport(); };
+buildQueue(); show(); checkSupport();
+</script>
+</body>
+</html>
