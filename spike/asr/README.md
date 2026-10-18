@@ -32,3 +32,20 @@ What it means:
 - The off-card test set is small (12 Persian, 8 Spanish per condition).
 
 Next: run `web/index.html` on a real device with your own voice, which tests both the browser recogniser (fa-IR, es-ES) and Whisper on real speech.
+
+## Results on a real voice (2026-10-18)
+
+One speaker (a learner, not a native speaker), Chrome on an Android 10 phone, using the automatic session in `web/index.html`.
+
+**Chrome's own recogniser** (online, Google): all 3 Spanish phrases were right. Of the 3 Persian phrases, 2 were transcribed exactly in colloquial spelling (*هوا سرده*, *میرم خونه*); the third gave "no match" with no text, which the app would treat as "say it again". Earlier runs that returned nothing were caused by a bug in the page (the recorder held the microphone at the same time), not by the recogniser.
+
+**Whisper on the recordings** (13 Persian card answers + 2 off-card phrases):
+
+| Whisper | Best guess right | Confidently right (safe rule) | Wrong accepted | Off-card accepted |
+|---|---|---|---|---|
+| tiny | 11/13 | 6/13 | 0 | 0/2 |
+| base | 13/13 | 10/13 | 0 | 0/2 |
+| small | 12/13 | 11/13 | 0 | 0/2 |
+| turbo | 13/13 | 10/13 | 0 | 0/2 |
+
+The real voice did better than the TTS voices (58–73% confidently right on TTS). The sample is tiny, though: one speaker and 15 phrases. Whisper writes what it hears (*سی تو* for *se tā*, *دو دوشم* for *dādāšam*), so matching against the card's answers does the real work; open transcription alone would not be usable.
