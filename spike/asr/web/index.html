@@ -13,10 +13,10 @@
   .muted { color: var(--muted); font-size: .9rem; }
   .opts { display: grid; gap: 8px; margin: 16px 0; }
   .opt { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 1.25rem; }
-  .opt.target { border: 2px solid var(--accent); }
+  .opt.target { border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
   .opt.picked.right { background: color-mix(in srgb, var(--ok) 18%, transparent); }
   .opt.picked.wrong { background: color-mix(in srgb, var(--bad) 18%, transparent); }
-  [dir=rtl] .opt { font-family: Vazirmatn, Tahoma, sans-serif; }
+  .script { font-family: Vazirmatn, Tahoma, sans-serif; font-size: 1rem; color: var(--muted); }
   .say { font-size: 1.4rem; margin: 12px 0; }
   button, select { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: inherit; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -51,7 +51,7 @@
 </main>
 <script>
 // Test items: the same as items.json. Each group is the four answers of one card.
-const ITEMS = {"fa": {"groups": [["خوبم، مرسی", "سلام، چطوری؟", "خداحافظ", "ببخشید"], ["نون", "پنیر", "چایی", "برنج"], ["میرم مدرسه", "میرم خونه", "میرم بازار", "میرم پارک"], ["دو تا", "سه تا", "ده تا", "دوازده تا"], ["مامانم", "بابام", "داداشم", "خواهرم"], ["ساعت هشت", "ساعت ده", "ساعت یازده", "ساعت چهار"], ["قابل نداره", "دستت درد نکنه", "خواهش می‌کنم", "بفرمایید"], ["یه کیلو سیب می‌خوام", "یه نون می‌خوام", "یه چایی می‌خوام", "یه بلیط می‌خوام"], ["کتابو بده", "کلیدو بده", "کیفو بده", "کفشو بده"], ["دارم می‌خونم", "دارم می‌خورم", "دارم می‌رم", "دارم می‌خوابم"], ["هوا سرده", "هوا گرمه", "بارون میاد", "برف میاد"], ["مستقیم برید", "دست راست", "دست چپ", "همین‌جا نگه دارید"], ["از تهرانم", "از شیرازم", "از اصفهانم", "از تبریزم"]], "out_of_set": [["من یه گربه دارم", 1], ["فردا می‌بینمت", 4], ["خیلی گشنمه", 10], ["تلفنم کجاست؟", 8]]}, "es": {"groups": [["Vale, nos vemos luego.", "¿Me pones un café, por favor?", "¿Qué tal estáis?", "No pasa nada."], ["Un café con leche.", "Una caña.", "Un bocadillo.", "Una tostada."], ["Hoy he comido paella.", "Hoy he ido al cole.", "Hoy he visto a mi tía.", "Hoy he jugado al fútbol."], ["A las ocho.", "A las nueve.", "A las diez.", "A las once."], ["El móvil.", "El coche.", "El ordenador.", "Las gafas."], ["Estoy cansado.", "Estoy cansada.", "Estoy contento.", "Estoy harto."], ["Gira a la derecha.", "Gira a la izquierda.", "Sigue todo recto.", "Para aquí."], ["¿Vosotros venís?", "¿Nosotros vamos?", "¿Ellos vienen?", "¿Tú vienes?"]], "out_of_set": [["Me gusta el chocolate.", 3], ["Mañana es lunes.", 6], ["Tengo un perro.", 4], ["¿Dónde está el baño?", 1]]}};
+const ITEMS = {"fa": {"groups": [["خوبم، مرسی", "سلام، چطوری؟", "خداحافظ", "ببخشید"], ["نون", "پنیر", "چایی", "برنج"], ["میرم مدرسه", "میرم خونه", "میرم بازار", "میرم پارک"], ["دو تا", "سه تا", "ده تا", "دوازده تا"], ["مامانم", "بابام", "داداشم", "خواهرم"], ["ساعت هشت", "ساعت ده", "ساعت یازده", "ساعت چهار"], ["قابل نداره", "دستت درد نکنه", "خواهش می‌کنم", "بفرمایید"], ["یه کیلو سیب می‌خوام", "یه نون می‌خوام", "یه چایی می‌خوام", "یه بلیط می‌خوام"], ["کتابو بده", "کلیدو بده", "کیفو بده", "کفشو بده"], ["دارم می‌خونم", "دارم می‌خورم", "دارم می‌رم", "دارم می‌خوابم"], ["هوا سرده", "هوا گرمه", "بارون میاد", "برف میاد"], ["مستقیم برید", "دست راست", "دست چپ", "همین‌جا نگه دارید"], ["از تهرانم", "از شیرازم", "از اصفهانم", "از تبریزم"]], "out_of_set": [["من یه گربه دارم", 1], ["فردا می‌بینمت", 4], ["خیلی گشنمه", 10], ["تلفنم کجاست؟", 8]], "latin": {"خوبم، مرسی": "xubam, mersi", "سلام، چطوری؟": "salām, cetori?", "خداحافظ": "xodāhāfez", "ببخشید": "bebaxšid", "نون": "nun", "پنیر": "panir", "چایی": "cāyi", "برنج": "berenj", "میرم مدرسه": "miram madrese", "میرم خونه": "miram xune", "میرم بازار": "miram bāzār", "میرم پارک": "miram pārk", "دو تا": "do tā", "سه تا": "se tā", "ده تا": "dah tā", "دوازده تا": "davāzdah tā", "مامانم": "māmānam", "بابام": "bābām", "داداشم": "dādāšam", "خواهرم": "xāharam", "ساعت هشت": "sā'at hašt", "ساعت ده": "sā'at dah", "ساعت یازده": "sā'at yāzdah", "ساعت چهار": "sā'at cahār", "قابل نداره": "qābel nadāre", "دستت درد نکنه": "dastet dard nakone", "خواهش می‌کنم": "xāheš mikonam", "بفرمایید": "befarmāyid", "یه کیلو سیب می‌خوام": "ye kilo sib mixām", "یه نون می‌خوام": "ye nun mixām", "یه چایی می‌خوام": "ye cāyi mixām", "یه بلیط می‌خوام": "ye belit mixām", "کتابو بده": "ketābo bede", "کلیدو بده": "kelido bede", "کیفو بده": "kifo bede", "کفشو بده": "kafšo bede", "دارم می‌خونم": "dāram mixunam", "دارم می‌خورم": "dāram mixoram", "دارم می‌رم": "dāram miram", "دارم می‌خوابم": "dāram mixābam", "هوا سرده": "havā sarde", "هوا گرمه": "havā garme", "بارون میاد": "bārun miyād", "برف میاد": "barf miyād", "مستقیم برید": "mostaqim berid", "دست راست": "dast-e rāst", "دست چپ": "dast-e cap", "همین‌جا نگه دارید": "haminjā negah dārid", "از تهرانم": "az tehrānam", "از شیرازم": "az širāzam", "از اصفهانم": "az esfahānam", "از تبریزم": "az tabrizam", "من یه گربه دارم": "man ye gorbe dāram", "فردا می‌بینمت": "fardā mibinamet", "خیلی گشنمه": "xeyli gošname", "تلفنم کجاست؟": "telefonam kojāst?"}}, "es": {"groups": [["Vale, nos vemos luego.", "¿Me pones un café, por favor?", "¿Qué tal estáis?", "No pasa nada."], ["Un café con leche.", "Una caña.", "Un bocadillo.", "Una tostada."], ["Hoy he comido paella.", "Hoy he ido al cole.", "Hoy he visto a mi tía.", "Hoy he jugado al fútbol."], ["A las ocho.", "A las nueve.", "A las diez.", "A las once."], ["El móvil.", "El coche.", "El ordenador.", "Las gafas."], ["Estoy cansado.", "Estoy cansada.", "Estoy contento.", "Estoy harto."], ["Gira a la derecha.", "Gira a la izquierda.", "Sigue todo recto.", "Para aquí."], ["¿Vosotros venís?", "¿Nosotros vamos?", "¿Ellos vienen?", "¿Tú vienes?"]], "out_of_set": [["Me gusta el chocolate.", 3], ["Mañana es lunes.", 6], ["Tengo un perro.", 4], ["¿Dónde está el baño?", 1]]}};
 
 const NUM = {
   fa: 'صفر یک دو سه چهار پنج شش هفت هشت نه ده یازده دوازده'.split(' '),
@@ -104,18 +104,29 @@ function buildQueue() {
   pos = 0;
 }
 
+// Persian is shown in the Latin transcription of the perski word list, with the script below it.
+function label(text) {
+  const span = document.createElement('span');
+  const lat = lang === 'fa' && ITEMS.fa.latin[text];
+  if (!lat) { span.textContent = text; return span; }
+  span.innerHTML = '<div></div><div class="script" dir="rtl"></div>';
+  span.children[0].textContent = lat;
+  span.children[1].textContent = text;
+  return span;
+}
+
 function show() {
   const item = queue[pos];
-  $('card').dir = lang === 'fa' ? 'rtl' : 'ltr';
   $('progress').textContent = item ? `${pos + 1} / ${queue.length}` : 'All done.';
   $('heard').textContent = '';
   $('opts').innerHTML = '';
-  $('say').textContent = item && !item.inSet ? `Say: ${item.text}` : '';
+  $('say').innerHTML = '';
+  if (item && !item.inSet) { $('say').append('Say: '); $('say').append(label(item.text)); }
   if (!item) return;
   ITEMS[lang].groups[item.group].forEach((c) => {
     const el = document.createElement('div');
     el.className = 'opt' + (item.inSet && c === item.text ? ' target' : '');
-    el.textContent = c;
+    el.append(label(c));
     $('opts').append(el);
   });
 }
