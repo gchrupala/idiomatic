@@ -165,14 +165,22 @@ async function startRec() {
   const r = new SR();
   r.lang = lang === 'fa' ? 'fa-IR' : 'es-ES';
   r.maxAlternatives = 5;
-  r.interimResults = false;
+  r.interimResults = true; // a final result sometimes never comes; keep the last partial one
+  item.events = [];
+  const log = (name) => item.events.push(`${name}@${Math.round(performance.now() - item.t0)}`);
+  for (const ev of ['start', 'audiostart', 'soundstart', 'speechstart', 'speechend', 'soundend', 'audioend', 'nomatch']) r.addEventListener(ev, () => log(ev));
   if ($('local').checked && 'processLocally' in r) {
     r.processLocally = true;
     if (SR.install) { try { await SR.install({ langs: [r.lang], processLocally: true }); } catch (e) {} }
   }
-  r.onresult = (e) => { item.alts = [...e.results[0]].map((a) => a.transcript); item.secs = (performance.now() - item.t0) / 1000; };
-  r.onerror = (e) => { item.error = e.error; };
-  r.onend = () => finish(item); // also fires by itself after a pause in speech
+  r.onresult = (e) => {
+    const res = e.results[e.results.length - 1];
+    const alts = [...res].map((a) => a.transcript);
+    log(res.isFinal ? `final:${alts[0]}` : `partial:${alts[0]}`);
+    if (res.isFinal || !item.final) { item.alts = alts; item.final = res.isFinal; item.secs = (performance.now() - item.t0) / 1000; }
+  };
+  r.onerror = (e) => { item.error = e.error; log(`error:${e.error}`); };
+  r.onend = () => { log('end'); finish(item); }; // also fires by itself after a pause in speech
   item.recog = r;
   try { r.start(); } catch (e) { item.error = String(e); finish(item); }
 }
@@ -181,7 +189,7 @@ function stopRec() {
   const item = active;
   if (!item) return;
   setButton('Checking…');
-  if (item.recog) item.recog.stop();
+  if (item.recog) { item.events?.push(`stop-tapped@${Math.round(performance.now() - item.t0)}`); item.recog.stop(); }
   else if (recorder && recorder.state !== 'inactive') recorder.stop();
 }
 
@@ -205,10 +213,11 @@ function grade(item) {
   const opts = [...$('opts').children];
   if (accepted) opts[m.index].classList.add('picked', cands[m.index] === item.text && item.inSet ? 'right' : 'wrong');
   $('heard').textContent = outcome === 'recorded' ? 'Recorded.'
-    : (item.error ? `Error: ${item.error}. ` : '') + `Heard: ${alts[0] ?? '(nothing)'} → ${outcome} (score ${m.score.toFixed(2)})`;
-  results.push({ mode: mode(), lang, text: item.text, group: item.group, in_set: item.inSet, alternatives: alts, best: accepted ? cands[m.index] : null, score: m.score, outcome, secs: item.secs ?? null, error: item.error ?? null, local: $('local').checked, blob: item.blob });
+    : (item.error ? `Error: ${item.error}. ` : '') + `Heard: ${alts[0] ?? '(nothing)'} → ${outcome} (score ${m.score.toFixed(2)})`
+      + (alts.length ? '' : ` · events: ${(item.events || []).join(' ')}`);
+  results.push({ mode: mode(), lang, text: item.text, group: item.group, in_set: item.inSet, alternatives: alts, best: accepted ? cands[m.index] : null, score: m.score, outcome, events: item.events ?? null, final: item.final ?? null, secs: item.secs ?? null, error: item.error ?? null, local: $('local').checked, blob: item.blob });
   summarise();
-  setTimeout(() => { pos++; show(); }, 1500);
+  setTimeout(() => { pos++; show(); }, outcome === 'not recognised' ? 4000 : 1500);
 }
 
 function summarise() {
