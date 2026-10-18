@@ -1,0 +1,9 @@
+{
+  "name": "mowa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Learn Spanish and Persian from animated, spoken stories, with FSRS-scheduled practice",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}
