@@ -4,115 +4,688 @@
   "title": "Una carta sin nombre",
   "story": "bilbao",
   "voices": {
-    "narrator": { "voice": "es_ES-davefx-medium", "sid": 0 },
-    "ane": { "voice": "es_ES-sharvard-medium", "sid": 1, "pitch": 1.08 },
-    "iker": { "voice": "es_ES-sharvard-medium", "sid": 1, "pitch": 1.22 },
-    "begona": { "voice": "es_ES-sharvard-medium", "sid": 1, "pitch": 0.97 },
-    "mikel": { "voice": "es_ES-sharvard-medium", "sid": 0 }
+    "narrator": {
+      "voice": "es_ES-davefx-medium",
+      "sid": 0
+    },
+    "ane": {
+      "voice": "es_ES-sharvard-medium",
+      "sid": 1,
+      "pitch": 1.08
+    },
+    "iker": {
+      "voice": "es_ES-sharvard-medium",
+      "sid": 1,
+      "pitch": 1.22
+    },
+    "begona": {
+      "voice": "es_ES-sharvard-medium",
+      "sid": 1,
+      "pitch": 0.97
+    },
+    "mikel": {
+      "voice": "es_ES-sharvard-medium",
+      "sid": 0
+    }
   },
   "cast": {
-    "ane": { "name": "Ane" },
-    "iker": { "name": "Iker" },
-    "begona": { "name": "Begoña" },
-    "mikel": { "name": "Mikel" },
-    "txiki": { "name": "Txiki" }
+    "ane": {
+      "name": "Ane"
+    },
+    "iker": {
+      "name": "Iker"
+    },
+    "begona": {
+      "name": "Begoña"
+    },
+    "mikel": {
+      "name": "Mikel"
+    },
+    "txiki": {
+      "name": "Txiki"
+    }
   },
   "sentences": [
-    { "id": "s01", "who": "narrator", "text": "Bilbao es una ciudad. Bilbao está en el norte de España.",
-      "en": "Bilbao is a city. Bilbao is in the north of Spain.", "pl": "Bilbao to miasto. Bilbao leży na północy Hiszpanii." },
-    { "id": "s02", "who": "narrator", "text": "En Bilbao hay un río y un museo muy famoso.",
-      "en": "In Bilbao there is a river and a very famous museum.", "pl": "W Bilbao jest rzeka i bardzo słynne muzeum." },
-    { "id": "s03", "who": "narrator", "text": "Esta es la casa de Ane.",
-      "en": "This is Ane's house.", "pl": "To jest dom Ane." },
-    { "id": "s04", "who": "narrator", "text": "Ane tiene catorce años.",
-      "en": "Ane is fourteen.", "pl": "Ane ma czternaście lat." },
-    { "id": "s05", "who": "narrator", "text": "Iker es el hermano de Ane. Iker es pequeño.",
-      "en": "Iker is Ane's brother. Iker is small.", "pl": "Iker jest bratem Ane. Iker jest mały." },
-    { "id": "s06", "who": "narrator", "text": "Ane es grande, Iker es pequeño.",
-      "en": "Ane is big, Iker is small.", "pl": "Ane jest duża, Iker jest mały." },
-    { "id": "s07", "who": "narrator", "text": "Begoña es la madre. Mikel es el padre.",
-      "en": "Begoña is the mother. Mikel is the father.", "pl": "Begoña jest matką. Mikel jest ojcem." },
-    { "id": "s08", "who": "narrator", "text": "Y Txiki es el perro de la familia.",
-      "en": "And Txiki is the family dog.", "pl": "A Txiki to pies rodziny." },
-    { "id": "s09", "who": "mikel", "text": "¡Buenos días! ¿Tenéis hambre?",
-      "en": "Good morning! Are you hungry?", "pl": "Dzień dobry! Jesteście głodni?" },
-    { "id": "s10", "who": "iker", "text": "¡Sí, mucha, aita!",
-      "en": "Yes, very, Dad!", "pl": "Tak, bardzo, tato!" },
-    { "id": "s11", "who": "narrator", "text": "En la mesa hay pan, tomate y café.",
-      "en": "On the table there is bread, tomato and coffee.", "pl": "Na stole jest chleb, pomidor i kawa." },
-    { "id": "s12", "who": "begona", "text": "Ane, ¿quieres un café con leche?",
-      "en": "Ane, do you want a white coffee?", "pl": "Ane, chcesz kawę z mlekiem?" },
-    { "id": "s13", "who": "ane", "text": "No, gracias, ama. Un zumo de naranja, por favor.",
-      "en": "No, thanks, Mum. An orange juice, please.", "pl": "Nie, dziękuję, mamo. Sok pomarańczowy, proszę." },
-    { "id": "s14", "who": "narrator", "text": "De repente, alguien llama a la puerta.",
-      "en": "Suddenly, someone knocks at the door.", "pl": "Nagle ktoś puka do drzwi." },
-    { "id": "s15", "who": "narrator", "text": "Ane abre la puerta. No hay nadie.",
-      "en": "Ane opens the door. There is nobody.", "pl": "Ane otwiera drzwi. Nikogo nie ma." },
-    { "id": "s16", "who": "narrator", "text": "En el suelo hay una carta.",
-      "en": "On the floor there is a letter.", "pl": "Na podłodze leży list." },
-    { "id": "s17", "who": "ane", "text": "¿Una carta? ¿Para quién es?",
-      "en": "A letter? Who is it for?", "pl": "List? Dla kogo jest?" },
-    { "id": "s18", "who": "iker", "text": "¡Es para ti, Ane! ¿De quién es?",
-      "en": "It's for you, Ane! Who is it from?", "pl": "Jest dla ciebie, Ane! Od kogo jest?" },
-    { "id": "s19", "who": "narrator", "text": "La carta no tiene nombre. Solo dice: «El sábado, a las once, en la Plaza Nueva».",
-      "en": "The letter has no name. It only says: \"On Saturday, at eleven, in the Plaza Nueva.\"", "pl": "List nie ma podpisu. Jest w nim tylko: „W sobotę o jedenastej na Plaza Nueva”." },
-    { "id": "s20", "who": "ane", "text": "¿Quién es? ¡Qué misterio!",
-      "en": "Who is it? What a mystery!", "pl": "Kto to jest? Co za tajemnica!" }
+    {
+      "id": "w01",
+      "who": "narrator",
+      "text": "Esto es una ciudad.",
+      "en": "This is a city.",
+      "pl": "To jest miasto.",
+      "picture": "🏙️"
+    },
+    {
+      "id": "w02",
+      "who": "narrator",
+      "text": "Esto es un río.",
+      "en": "This is a river.",
+      "pl": "To jest rzeka.",
+      "picture": "🏞️"
+    },
+    {
+      "id": "w03",
+      "who": "narrator",
+      "text": "Esto es una casa.",
+      "en": "This is a house.",
+      "pl": "To jest dom.",
+      "picture": "🏠"
+    },
+    {
+      "id": "w04",
+      "who": "narrator",
+      "text": "Esto es una chica.",
+      "en": "This is a girl.",
+      "pl": "To jest dziewczyna.",
+      "picture": "👧"
+    },
+    {
+      "id": "w05",
+      "who": "narrator",
+      "text": "Esto es un chico.",
+      "en": "This is a boy.",
+      "pl": "To jest chłopiec.",
+      "picture": "👦"
+    },
+    {
+      "id": "w06",
+      "who": "narrator",
+      "text": "Esto es un perro.",
+      "en": "This is a dog.",
+      "pl": "To jest pies.",
+      "picture": "🐕"
+    },
+    {
+      "id": "w07",
+      "who": "narrator",
+      "text": "Esto es una carta.",
+      "en": "This is a letter.",
+      "pl": "To jest list.",
+      "picture": "✉️"
+    },
+    {
+      "id": "s01",
+      "who": "narrator",
+      "text": "Bilbao es una ciudad.",
+      "en": "Bilbao is a city.",
+      "pl": "Bilbao to miasto."
+    },
+    {
+      "id": "s02",
+      "who": "narrator",
+      "text": "Bilbao está en España. Bilbao está en el norte de España.",
+      "en": "Bilbao is in Spain. Bilbao is in the north of Spain.",
+      "pl": "Bilbao leży w Hiszpanii. Bilbao leży na północy Hiszpanii."
+    },
+    {
+      "id": "s03",
+      "who": "narrator",
+      "text": "Madrid también es una ciudad. Madrid está en el centro de España.",
+      "en": "Madrid is a city too. Madrid is in the centre of Spain.",
+      "pl": "Madryt też jest miastem. Madryt leży w środku Hiszpanii."
+    },
+    {
+      "id": "s04",
+      "who": "narrator",
+      "text": "¿Está Madrid en el norte? No, Madrid no está en el norte. Bilbao está en el norte.",
+      "en": "Is Madrid in the north? No, Madrid is not in the north. Bilbao is in the north.",
+      "pl": "Czy Madryt leży na północy? Nie, Madryt nie leży na północy. Bilbao leży na północy."
+    },
+    {
+      "id": "s05",
+      "who": "narrator",
+      "text": "En Bilbao hay un río. El río es grande.",
+      "en": "In Bilbao there is a river. The river is big.",
+      "pl": "W Bilbao jest rzeka. Rzeka jest duża."
+    },
+    {
+      "id": "s06",
+      "who": "narrator",
+      "text": "En Bilbao hay un museo. El museo es grande y famoso.",
+      "en": "In Bilbao there is a museum. The museum is big and famous.",
+      "pl": "W Bilbao jest muzeum. Muzeum jest duże i słynne."
+    },
+    {
+      "id": "s07",
+      "who": "narrator",
+      "text": "Esta es una casa. Es la casa de Ane.",
+      "en": "This is a house. It is Ane's house.",
+      "pl": "To jest dom. To dom Ane."
+    },
+    {
+      "id": "s08",
+      "who": "narrator",
+      "text": "Ane es una chica. Ane tiene catorce años.",
+      "en": "Ane is a girl. Ane is fourteen.",
+      "pl": "Ane jest dziewczyną. Ane ma czternaście lat."
+    },
+    {
+      "id": "s09",
+      "who": "narrator",
+      "text": "Iker es un chico. Iker es el hermano de Ane.",
+      "en": "Iker is a boy. Iker is Ane's brother.",
+      "pl": "Iker jest chłopcem. Iker jest bratem Ane."
+    },
+    {
+      "id": "s10",
+      "who": "narrator",
+      "text": "Iker tiene nueve años. Iker es pequeño.",
+      "en": "Iker is nine. Iker is small.",
+      "pl": "Iker ma dziewięć lat. Iker jest mały."
+    },
+    {
+      "id": "s11",
+      "who": "narrator",
+      "text": "Ane es grande. Iker es pequeño. ¿Es Iker grande? No, Iker no es grande. Iker es pequeño.",
+      "en": "Ane is big. Iker is small. Is Iker big? No, Iker is not big. Iker is small.",
+      "pl": "Ane jest duża. Iker jest mały. Czy Iker jest duży? Nie, Iker nie jest duży. Iker jest mały."
+    },
+    {
+      "id": "s12",
+      "who": "narrator",
+      "text": "Begoña es la madre de Ane y de Iker.",
+      "en": "Begoña is Ane and Iker's mother.",
+      "pl": "Begoña jest matką Ane i Ikera."
+    },
+    {
+      "id": "s13",
+      "who": "narrator",
+      "text": "Mikel es el padre de Ane y de Iker.",
+      "en": "Mikel is Ane and Iker's father.",
+      "pl": "Mikel jest ojcem Ane i Ikera."
+    },
+    {
+      "id": "s14",
+      "who": "narrator",
+      "text": "Begoña es la madre. Mikel es el padre. Ane e Iker son los hijos.",
+      "en": "Begoña is the mother. Mikel is the father. Ane and Iker are the children.",
+      "pl": "Begoña jest matką. Mikel jest ojcem. Ane i Iker są dziećmi."
+    },
+    {
+      "id": "s15",
+      "who": "narrator",
+      "text": "Txiki es un perro. Txiki es el perro de la familia.",
+      "en": "Txiki is a dog. Txiki is the family dog.",
+      "pl": "Txiki jest psem. Txiki to pies rodziny."
+    },
+    {
+      "id": "s16",
+      "who": "mikel",
+      "text": "¡Buenos días! ¿Tenéis hambre?",
+      "en": "Good morning! Are you hungry?",
+      "pl": "Dzień dobry! Jesteście głodni?"
+    },
+    {
+      "id": "s17",
+      "who": "iker",
+      "text": "¡Sí, aita! Tengo mucha hambre.",
+      "en": "Yes, Dad! I'm very hungry.",
+      "pl": "Tak, tato! Jestem bardzo głodny."
+    },
+    {
+      "id": "s18",
+      "who": "narrator",
+      "text": "En la mesa hay pan. En la mesa hay tomate. Y hay café.",
+      "en": "On the table there is bread. On the table there is tomato. And there is coffee.",
+      "pl": "Na stole jest chleb. Na stole jest pomidor. I jest kawa."
+    },
+    {
+      "id": "s19",
+      "who": "begona",
+      "text": "Ane, ¿quieres café?",
+      "en": "Ane, do you want coffee?",
+      "pl": "Ane, chcesz kawy?"
+    },
+    {
+      "id": "s20",
+      "who": "ane",
+      "text": "No, gracias, ama. No quiero café. Quiero un zumo de naranja.",
+      "en": "No, thanks, Mum. I don't want coffee. I want an orange juice.",
+      "pl": "Nie, dziękuję, mamo. Nie chcę kawy. Chcę sok pomarańczowy."
+    },
+    {
+      "id": "s21",
+      "who": "narrator",
+      "text": "De repente, alguien llama a la puerta.",
+      "en": "Suddenly, someone knocks at the door.",
+      "pl": "Nagle ktoś puka do drzwi."
+    },
+    {
+      "id": "s22",
+      "who": "narrator",
+      "text": "Ane abre la puerta. ¿Hay alguien? No, no hay nadie.",
+      "en": "Ane opens the door. Is there anyone? No, there is nobody.",
+      "pl": "Ane otwiera drzwi. Czy ktoś tam jest? Nie, nikogo nie ma."
+    },
+    {
+      "id": "s23",
+      "who": "narrator",
+      "text": "Pero en el suelo hay una carta.",
+      "en": "But on the floor there is a letter.",
+      "pl": "Ale na podłodze leży list."
+    },
+    {
+      "id": "s24",
+      "who": "ane",
+      "text": "¿Una carta? ¿Para quién es?",
+      "en": "A letter? Who is it for?",
+      "pl": "List? Dla kogo jest?"
+    },
+    {
+      "id": "s25",
+      "who": "iker",
+      "text": "¡Es para ti, Ane! ¿De quién es?",
+      "en": "It's for you, Ane! Who is it from?",
+      "pl": "Jest dla ciebie, Ane! Od kogo jest?"
+    },
+    {
+      "id": "s26",
+      "who": "narrator",
+      "text": "La carta no tiene nombre. Solo dice: «El sábado, a las once, en la Plaza Nueva».",
+      "en": "The letter has no name. It only says: \"On Saturday, at eleven, in the Plaza Nueva.\"",
+      "pl": "List nie ma podpisu. Jest w nim tylko: „W sobotę o jedenastej na Plaza Nueva”."
+    },
+    {
+      "id": "s27",
+      "who": "ane",
+      "text": "¿Quién es? ¡Qué misterio!",
+      "en": "Who is it? What a mystery!",
+      "pl": "Kto to jest? Co za tajemnica!"
+    }
   ],
   "glosses": {
-    "ciudad": { "tl": "Bilbao, Madrid y Sevilla son ciudades.", "en": "city", "pl": "miasto" },
-    "norte": { "tl": "Bilbao está arriba en el mapa: en el norte.", "en": "north", "pl": "północ" },
-    "río": { "tl": "El agua del río va al mar.", "en": "river", "pl": "rzeka" },
-    "museo": { "tl": "En el museo hay arte.", "en": "museum", "pl": "muzeum" },
-    "famoso": { "tl": "Todo el mundo conoce el museo: es famoso.", "en": "famous", "pl": "słynny" },
-    "casa": { "tl": "🏠 La familia vive en la casa.", "en": "house, home", "pl": "dom" },
-    "años": { "tl": "Ane: 14 años. Iker: 9 años.", "en": "years (old)", "pl": "lat" },
-    "hermano": { "tl": "Ane e Iker son hermanos.", "en": "brother", "pl": "brat" },
-    "grande": { "tl": "grande ↔ pequeño", "en": "big", "pl": "duży" },
-    "pequeño": { "tl": "pequeño ↔ grande", "en": "small", "pl": "mały" },
-    "madre": { "tl": "madre = mamá. En Bilbao muchos dicen «ama».", "en": "mother", "pl": "matka" },
-    "padre": { "tl": "padre = papá. En Bilbao muchos dicen «aita».", "en": "father", "pl": "ojciec" },
-    "perro": { "tl": "🐕 Txiki es un perro.", "en": "dog", "pl": "pies" },
-    "hambre": { "tl": "Quiero comer = tengo hambre.", "en": "hunger", "pl": "głód" },
-    "aita": { "tl": "aita = papá (en euskera, la lengua vasca).", "en": "Dad (Basque)", "pl": "tata (po baskijsku)" },
-    "ama": { "tl": "ama = mamá (en euskera, la lengua vasca).", "en": "Mum (Basque)", "pl": "mama (po baskijsku)" },
-    "mesa": { "tl": "El pan está en la mesa.", "en": "table", "pl": "stół" },
-    "hay": { "tl": "En la mesa hay pan = el pan está en la mesa.", "en": "there is / there are", "pl": "jest / są" },
-    "pan": { "tl": "🍞", "en": "bread", "pl": "chleb" },
-    "tomate": { "tl": "🍅", "en": "tomato", "pl": "pomidor" },
-    "café": { "tl": "☕", "en": "coffee", "pl": "kawa" },
-    "leche": { "tl": "🥛", "en": "milk", "pl": "mleko" },
-    "zumo": { "tl": "🧃", "en": "juice", "pl": "sok" },
-    "naranja": { "tl": "🍊", "en": "orange", "pl": "pomarańcza" },
-    "alguien": { "tl": "alguien ↔ nadie", "en": "someone", "pl": "ktoś" },
-    "puerta": { "tl": "🚪", "en": "door", "pl": "drzwi" },
-    "abre": { "tl": "abre ↔ cierra", "en": "opens", "pl": "otwiera" },
-    "nadie": { "tl": "nadie ↔ alguien", "en": "nobody", "pl": "nikt" },
-    "suelo": { "tl": "Txiki está en el suelo, no en la mesa.", "en": "floor", "pl": "podłoga" },
-    "carta": { "tl": "✉️", "en": "letter", "pl": "list" },
-    "nombre": { "tl": "Ane, Iker, Begoña: son nombres.", "en": "name", "pl": "imię, podpis" },
-    "sábado": { "tl": "viernes, sábado, domingo", "en": "Saturday", "pl": "sobota" },
-    "misterio": { "tl": "No sé quién es. ¡Es un misterio!", "en": "mystery", "pl": "tajemnica" }
+    "ciudad": {
+      "tl": "Bilbao, Madrid y Sevilla son ciudades.",
+      "en": "city",
+      "pl": "miasto"
+    },
+    "norte": {
+      "tl": "Bilbao está arriba en el mapa: en el norte.",
+      "en": "north",
+      "pl": "północ"
+    },
+    "río": {
+      "tl": "El agua del río va al mar.",
+      "en": "river",
+      "pl": "rzeka"
+    },
+    "museo": {
+      "tl": "En el museo hay arte.",
+      "en": "museum",
+      "pl": "muzeum"
+    },
+    "famoso": {
+      "tl": "Todo el mundo conoce el museo: es famoso.",
+      "en": "famous",
+      "pl": "słynny"
+    },
+    "casa": {
+      "tl": "🏠 La familia vive en la casa.",
+      "en": "house, home",
+      "pl": "dom"
+    },
+    "años": {
+      "tl": "Ane: 14 años. Iker: 9 años.",
+      "en": "years (old)",
+      "pl": "lat"
+    },
+    "hermano": {
+      "tl": "Ane e Iker son hermanos.",
+      "en": "brother",
+      "pl": "brat"
+    },
+    "grande": {
+      "tl": "grande ↔ pequeño",
+      "en": "big",
+      "pl": "duży"
+    },
+    "pequeño": {
+      "tl": "pequeño ↔ grande",
+      "en": "small",
+      "pl": "mały"
+    },
+    "madre": {
+      "tl": "madre = mamá. En Bilbao muchos dicen «ama».",
+      "en": "mother",
+      "pl": "matka"
+    },
+    "padre": {
+      "tl": "padre = papá. En Bilbao muchos dicen «aita».",
+      "en": "father",
+      "pl": "ojciec"
+    },
+    "perro": {
+      "tl": "🐕 Txiki es un perro.",
+      "en": "dog",
+      "pl": "pies"
+    },
+    "hambre": {
+      "tl": "Quiero comer = tengo hambre.",
+      "en": "hunger",
+      "pl": "głód"
+    },
+    "aita": {
+      "tl": "aita = papá (en euskera, la lengua vasca).",
+      "en": "Dad (Basque)",
+      "pl": "tata (po baskijsku)"
+    },
+    "ama": {
+      "tl": "ama = mamá (en euskera, la lengua vasca).",
+      "en": "Mum (Basque)",
+      "pl": "mama (po baskijsku)"
+    },
+    "mesa": {
+      "tl": "El pan está en la mesa.",
+      "en": "table",
+      "pl": "stół"
+    },
+    "hay": {
+      "tl": "En la mesa hay pan = el pan está en la mesa.",
+      "en": "there is / there are",
+      "pl": "jest / są"
+    },
+    "pan": {
+      "tl": "🍞",
+      "en": "bread",
+      "pl": "chleb"
+    },
+    "tomate": {
+      "tl": "🍅",
+      "en": "tomato",
+      "pl": "pomidor"
+    },
+    "café": {
+      "tl": "☕",
+      "en": "coffee",
+      "pl": "kawa"
+    },
+    "zumo": {
+      "tl": "🧃",
+      "en": "juice",
+      "pl": "sok"
+    },
+    "naranja": {
+      "tl": "🍊",
+      "en": "orange",
+      "pl": "pomarańcza"
+    },
+    "alguien": {
+      "tl": "alguien ↔ nadie",
+      "en": "someone",
+      "pl": "ktoś"
+    },
+    "puerta": {
+      "tl": "🚪",
+      "en": "door",
+      "pl": "drzwi"
+    },
+    "abre": {
+      "tl": "abre ↔ cierra",
+      "en": "opens",
+      "pl": "otwiera"
+    },
+    "nadie": {
+      "tl": "nadie ↔ alguien",
+      "en": "nobody",
+      "pl": "nikt"
+    },
+    "suelo": {
+      "tl": "Txiki está en el suelo, no en la mesa.",
+      "en": "floor",
+      "pl": "podłoga"
+    },
+    "carta": {
+      "tl": "✉️",
+      "en": "letter",
+      "pl": "list"
+    },
+    "nombre": {
+      "tl": "Ane, Iker, Begoña: son nombres.",
+      "en": "name",
+      "pl": "imię, podpis"
+    },
+    "sábado": {
+      "tl": "viernes, sábado, domingo",
+      "en": "Saturday",
+      "pl": "sobota"
+    },
+    "misterio": {
+      "tl": "No sé quién es. ¡Es un misterio!",
+      "en": "mystery",
+      "pl": "tajemnica"
+    },
+    "centro": {
+      "tl": "El centro está en el medio.",
+      "en": "centre",
+      "pl": "środek"
+    },
+    "también": {
+      "tl": "Bilbao es una ciudad. Madrid también.",
+      "en": "too, also",
+      "pl": "też"
+    },
+    "chica": {
+      "tl": "Ane es una chica. Iker es un chico.",
+      "en": "girl",
+      "pl": "dziewczyna"
+    },
+    "chico": {
+      "tl": "Iker es un chico. Ane es una chica.",
+      "en": "boy",
+      "pl": "chłopiec"
+    },
+    "hijos": {
+      "tl": "Ane e Iker son los hijos de Begoña y Mikel.",
+      "en": "children (son and daughter)",
+      "pl": "dzieci (syn i córka)"
+    },
+    "esto": {
+      "tl": "Esto = lo que ves en la imagen.",
+      "en": "this",
+      "pl": "to"
+    }
   },
   "cards": [
-    { "id": "pan", "kind": "picture", "word": "el pan", "emoji": "🍞" },
-    { "id": "tomato", "kind": "picture", "word": "el tomate", "emoji": "🍅" },
-    { "id": "coffee", "kind": "picture", "word": "el café", "emoji": "☕" },
-    { "id": "juice", "kind": "picture", "word": "el zumo", "emoji": "🧃" },
-    { "id": "dog", "kind": "picture", "word": "el perro", "emoji": "🐕" },
-    { "id": "door", "kind": "picture", "word": "la puerta", "emoji": "🚪" },
-    { "id": "letter", "kind": "picture", "word": "la carta", "emoji": "✉️" },
-    { "id": "house", "kind": "picture", "word": "la casa", "emoji": "🏠" },
-    { "id": "g1", "kind": "gap", "text": "Iker es el ___ de Ane.", "answer": "hermano", "wrong": ["padre", "perro", "nombre"] },
-    { "id": "g2", "kind": "gap", "text": "Ane ___ catorce años.", "answer": "tiene", "wrong": ["es", "hay", "está"] },
-    { "id": "g3", "kind": "gap", "text": "Bilbao ___ en el norte de España.", "answer": "está", "wrong": ["es", "tiene", "hay"] },
-    { "id": "g4", "kind": "gap", "text": "En la mesa ___ pan, tomate y café.", "answer": "hay", "wrong": ["es", "está", "tiene"] },
-    { "id": "g5", "kind": "gap", "text": "Ane ___ la puerta.", "answer": "abre", "wrong": ["tiene", "es", "quiere"] },
-    { "id": "q1", "kind": "question", "text": "¿Quién es Txiki?", "answer": "El perro de la familia.", "wrong": ["El padre de Ane.", "El hermano de Ane.", "Una ciudad."] },
-    { "id": "q2", "kind": "question", "text": "¿Qué hay en el suelo?", "answer": "Una carta.", "wrong": ["Un perro.", "Pan y tomate.", "Un café."] },
-    { "id": "q3", "kind": "question", "text": "¿Qué quiere Ane?", "answer": "Un zumo de naranja.", "wrong": ["Un café con leche.", "Pan con tomate.", "Una carta."] },
-    { "id": "q4", "kind": "question", "text": "¿Dónde está Bilbao?", "answer": "En el norte de España.", "wrong": ["En la mesa.", "En el suelo.", "En la carta."] },
-    { "id": "o1", "kind": "opposite", "word": "grande", "answer": "pequeño", "wrong": ["alguien", "nadie", "abre"] },
-    { "id": "o2", "kind": "opposite", "word": "alguien", "answer": "nadie", "wrong": ["grande", "pequeño", "padre"] }
+    {
+      "id": "pan",
+      "kind": "picture",
+      "word": "el pan",
+      "emoji": "🍞"
+    },
+    {
+      "id": "tomato",
+      "kind": "picture",
+      "word": "el tomate",
+      "emoji": "🍅"
+    },
+    {
+      "id": "coffee",
+      "kind": "picture",
+      "word": "el café",
+      "emoji": "☕"
+    },
+    {
+      "id": "juice",
+      "kind": "picture",
+      "word": "el zumo",
+      "emoji": "🧃"
+    },
+    {
+      "id": "dog",
+      "kind": "picture",
+      "word": "el perro",
+      "emoji": "🐕"
+    },
+    {
+      "id": "door",
+      "kind": "picture",
+      "word": "la puerta",
+      "emoji": "🚪"
+    },
+    {
+      "id": "letter",
+      "kind": "picture",
+      "word": "la carta",
+      "emoji": "✉️"
+    },
+    {
+      "id": "house",
+      "kind": "picture",
+      "word": "la casa",
+      "emoji": "🏠"
+    },
+    {
+      "id": "g1",
+      "kind": "gap",
+      "text": "Iker es el ___ de Ane.",
+      "answer": "hermano",
+      "wrong": [
+        "padre",
+        "perro",
+        "nombre"
+      ]
+    },
+    {
+      "id": "g2",
+      "kind": "gap",
+      "text": "Ane ___ catorce años.",
+      "answer": "tiene",
+      "wrong": [
+        "es",
+        "hay",
+        "está"
+      ]
+    },
+    {
+      "id": "g3",
+      "kind": "gap",
+      "text": "Bilbao ___ en el norte de España.",
+      "answer": "está",
+      "wrong": [
+        "es",
+        "tiene",
+        "hay"
+      ]
+    },
+    {
+      "id": "g4",
+      "kind": "gap",
+      "text": "En la mesa ___ pan, tomate y café.",
+      "answer": "hay",
+      "wrong": [
+        "es",
+        "está",
+        "tiene"
+      ]
+    },
+    {
+      "id": "g5",
+      "kind": "gap",
+      "text": "Ane ___ la puerta.",
+      "answer": "abre",
+      "wrong": [
+        "tiene",
+        "es",
+        "quiere"
+      ]
+    },
+    {
+      "id": "q1",
+      "kind": "question",
+      "text": "¿Quién es Txiki?",
+      "answer": "El perro de la familia.",
+      "wrong": [
+        "El padre de Ane.",
+        "El hermano de Ane.",
+        "Una ciudad."
+      ]
+    },
+    {
+      "id": "q2",
+      "kind": "question",
+      "text": "¿Qué hay en el suelo?",
+      "answer": "Una carta.",
+      "wrong": [
+        "Un perro.",
+        "Pan y tomate.",
+        "Un café."
+      ]
+    },
+    {
+      "id": "q4",
+      "kind": "question",
+      "text": "¿Dónde está Bilbao?",
+      "answer": "En el norte de España.",
+      "wrong": [
+        "En la mesa.",
+        "En el suelo.",
+        "En la carta."
+      ]
+    },
+    {
+      "id": "o1",
+      "kind": "opposite",
+      "word": "grande",
+      "answer": "pequeño",
+      "wrong": [
+        "alguien",
+        "nadie",
+        "abre"
+      ]
+    },
+    {
+      "id": "o2",
+      "kind": "opposite",
+      "word": "alguien",
+      "answer": "nadie",
+      "wrong": [
+        "grande",
+        "pequeño",
+        "padre"
+      ]
+    },
+    {
+      "id": "q3",
+      "kind": "question",
+      "text": "¿Qué quiere Ane?",
+      "answer": "Un zumo de naranja.",
+      "wrong": [
+        "Café.",
+        "Pan con tomate.",
+        "Una carta."
+      ]
+    },
+    {
+      "id": "q5",
+      "kind": "question",
+      "text": "¿Está Madrid en el norte?",
+      "answer": "No, está en el centro.",
+      "wrong": [
+        "Sí, está en el norte.",
+        "No, está en la mesa.",
+        "Sí, es un río."
+      ]
+    },
+    {
+      "id": "g6",
+      "kind": "gap",
+      "text": "Iker ___ nueve años.",
+      "answer": "tiene",
+      "wrong": [
+        "es",
+        "hay",
+        "está"
+      ]
+    },
+    {
+      "id": "o3",
+      "kind": "opposite",
+      "word": "chica",
+      "answer": "chico",
+      "wrong": [
+        "madre",
+        "casa",
+        "carta"
+      ]
+    }
   ]
 }

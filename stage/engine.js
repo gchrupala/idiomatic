@@ -548,7 +548,10 @@ export function createPlayer(container, chapter, story, { onLine = () => {}, onE
   container.replaceChildren(svg);
   const noteDiv = document.createElement('div');
   noteDiv.className = 'scene-note';
-  container.append(noteDiv);
+  // a picture card for the sentences that introduce a word ("Esto es un río.")
+  const card = document.createElement('div');
+  card.className = 'scene-card';
+  container.append(noteDiv, card);
   rt.svg = svg; rt.note = noteDiv;
   rt.layers = {};
   const world = el('g', {}, svg);
@@ -576,6 +579,8 @@ export function createPlayer(container, chapter, story, { onLine = () => {}, onE
     index = i; sentStart = rt.clock; beatIdx = 0; ending = 0;
     const line = sentences[i];
     rt.speaker = s.actors[line.who] || null;
+    card.classList.toggle('on', !!line.picture);
+    if (line.picture) card.innerHTML = `<span class="pic">${line.picture}</span><span>${line.text.replace(/^Esto es /, '').replace(/\..*$/, '')}</span>`;
     audio.src = chapter.audio[line.text].file;
     setEnvelope(chapter.audio[line.text].env);
     audio.playbackRate = rate;

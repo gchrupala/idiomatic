@@ -30,7 +30,7 @@ for (const lang of ['es', 'fa']) for (const id of lessons(lang)) {
 
   if (ch.story) test(`${lang}/${id}: the story module stages every sentence`, () => {
     const src = fs.readFileSync(path.join(ROOT, `stage/${ch.story}.js`), 'utf8');
-    for (const s of ch.sentences) assert.ok(new RegExp(`\\b${s.id}: \\[`).test(src), `${s.id}: not in stage/${ch.story}.js`);
+    for (const s of ch.sentences) if (!s.picture) assert.ok(new RegExp(`\\b${s.id}: \\[`).test(src), `${s.id}: not in stage/${ch.story}.js`);
   });
 
   if (!ch.story) test(`${lang}/${id}: scene actions name known actions, actors and props`, () => {

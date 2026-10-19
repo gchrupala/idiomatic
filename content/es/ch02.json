@@ -4,111 +4,686 @@
   "title": "El sábado en la Plaza Nueva",
   "story": "plaza",
   "voices": {
-    "narrator": { "voice": "es_ES-davefx-medium", "sid": 0 },
-    "ane": { "voice": "es_ES-sharvard-medium", "sid": 1, "pitch": 1.08 },
-    "iker": { "voice": "es_ES-sharvard-medium", "sid": 1, "pitch": 1.22 },
-    "bruno": { "voice": "es_MX-claude-high", "sid": 0 }
+    "narrator": {
+      "voice": "es_ES-davefx-medium",
+      "sid": 0
+    },
+    "ane": {
+      "voice": "es_ES-sharvard-medium",
+      "sid": 1,
+      "pitch": 1.08
+    },
+    "iker": {
+      "voice": "es_ES-sharvard-medium",
+      "sid": 1,
+      "pitch": 1.22
+    },
+    "bruna": {
+      "voice": "es_AR-daniela-high",
+      "sid": 0
+    }
   },
   "cast": {
-    "ane": { "name": "Ane" },
-    "iker": { "name": "Iker" },
-    "bruno": { "name": "Bruno" },
-    "txiki": { "name": "Txiki" }
+    "ane": {
+      "name": "Ane"
+    },
+    "iker": {
+      "name": "Iker"
+    },
+    "bruna": {
+      "name": "Bruna"
+    },
+    "txiki": {
+      "name": "Txiki"
+    }
   },
   "sentences": [
-    { "id": "s01", "who": "narrator", "text": "Es sábado. En Bilbao llueve un poco.",
-      "en": "It is Saturday. In Bilbao it is raining a little.", "pl": "Jest sobota. W Bilbao trochę pada." },
-    { "id": "s02", "who": "narrator", "text": "Ane, Iker y Txiki van a la Plaza Nueva.",
-      "en": "Ane, Iker and Txiki go to the Plaza Nueva.", "pl": "Ane, Iker i Txiki idą na Plaza Nueva." },
-    { "id": "s03", "who": "narrator", "text": "La plaza es bonita. Hay muchos bares.",
-      "en": "The square is pretty. There are many bars.", "pl": "Plac jest ładny. Jest tu dużo barów." },
-    { "id": "s04", "who": "iker", "text": "Son las once. ¿Dónde está el hombre de la carta?",
-      "en": "It's eleven o'clock. Where is the man from the letter?", "pl": "Jest jedenasta. Gdzie jest ten pan od listu?" },
-    { "id": "s05", "who": "ane", "text": "No sé... ¡Mira, allí!",
-      "en": "I don't know... Look, over there!", "pl": "Nie wiem... Patrz, tam!" },
-    { "id": "s06", "who": "narrator", "text": "Un hombre viene con un paraguas rojo.",
-      "en": "A man is coming with a red umbrella.", "pl": "Idzie jakiś pan z czerwonym parasolem." },
-    { "id": "s07", "who": "bruno", "text": "¡Ane! ¡Iker! ¿Cómo andan?",
-      "en": "Ane! Iker! How are you doing?", "pl": "Ane! Iker! Jak leci?" },
-    { "id": "s08", "who": "ane", "text": "¡Bruno! ¡Hola!",
-      "en": "Bruno! Hi!", "pl": "Bruno! Cześć!" },
-    { "id": "s09", "who": "narrator", "text": "Bruno es amigo de la familia. Es de Argentina y vive en Buenos Aires.",
-      "en": "Bruno is a friend of the family. He is from Argentina and lives in Buenos Aires.", "pl": "Bruno jest przyjacielem rodziny. Jest z Argentyny i mieszka w Buenos Aires." },
-    { "id": "s10", "who": "bruno", "text": "¡Che, qué grande que estás, Ane!",
-      "en": "Hey, how big you are now, Ane!", "pl": "Ej, ale urosłaś, Ane!" },
-    { "id": "s11", "who": "iker", "text": "Bruno, ¿la carta es tuya?",
-      "en": "Bruno, is the letter yours?", "pl": "Bruno, to twój list?" },
-    { "id": "s12", "who": "bruno", "text": "Sí, es mía. ¡Es una sorpresa!",
-      "en": "Yes, it's mine. It's a surprise!", "pl": "Tak, mój. To niespodzianka!" },
-    { "id": "s13", "who": "bruno", "text": "¿Tienen hambre? Vamos a comer unos pintxos.",
-      "en": "Are you hungry? Let's go and eat some pintxos.", "pl": "Jesteście głodni? Chodźmy na pintxos." },
-    { "id": "s14", "who": "narrator", "text": "En el bar hay pintxos de tortilla, de queso y de jamón.",
-      "en": "In the bar there are pintxos with omelette, cheese and ham.", "pl": "W barze są pintxos z tortillą, z serem i z szynką." },
-    { "id": "s15", "who": "bruno", "text": "Ane, ¿vos qué querés?",
-      "en": "Ane, what do you want?", "pl": "Ane, co chcesz?" },
-    { "id": "s16", "who": "ane", "text": "Un pintxo de tortilla, por favor.",
-      "en": "An omelette pintxo, please.", "pl": "Pintxo z tortillą, proszę." },
-    { "id": "s17", "who": "iker", "text": "¡Y yo uno de queso!",
-      "en": "And a cheese one for me!", "pl": "A ja z serem!" },
-    { "id": "s18", "who": "narrator", "text": "Y Txiki quiere agua.",
-      "en": "And Txiki wants water.", "pl": "A Txiki chce wody." },
-    { "id": "s19", "who": "bruno", "text": "¡Qué rico! Me encanta Bilbao.",
-      "en": "How tasty! I love Bilbao.", "pl": "Pyszne! Uwielbiam Bilbao." }
+    {
+      "id": "w01",
+      "who": "narrator",
+      "text": "Esto es un paraguas.",
+      "en": "This is an umbrella.",
+      "pl": "To jest parasol.",
+      "picture": "☂️"
+    },
+    {
+      "id": "w02",
+      "who": "narrator",
+      "text": "Esto es la lluvia. Llueve.",
+      "en": "This is the rain. It is raining.",
+      "pl": "To jest deszcz. Pada.",
+      "picture": "🌧️"
+    },
+    {
+      "id": "w03",
+      "who": "narrator",
+      "text": "Esto es un reloj.",
+      "en": "This is a clock.",
+      "pl": "To jest zegar.",
+      "picture": "🕚"
+    },
+    {
+      "id": "w04",
+      "who": "narrator",
+      "text": "Esto es una mujer.",
+      "en": "This is a woman.",
+      "pl": "To jest kobieta.",
+      "picture": "👩"
+    },
+    {
+      "id": "w05",
+      "who": "narrator",
+      "text": "Esto es queso.",
+      "en": "This is cheese.",
+      "pl": "To jest ser.",
+      "picture": "🧀"
+    },
+    {
+      "id": "w06",
+      "who": "narrator",
+      "text": "Esto es agua.",
+      "en": "This is water.",
+      "pl": "To jest woda.",
+      "picture": "💧"
+    },
+    {
+      "id": "s01",
+      "who": "narrator",
+      "text": "Es sábado. Hoy es sábado.",
+      "en": "It is Saturday. Today is Saturday.",
+      "pl": "Jest sobota. Dziś jest sobota."
+    },
+    {
+      "id": "s02",
+      "who": "narrator",
+      "text": "En Bilbao llueve. Llueve un poco.",
+      "en": "In Bilbao it is raining. It is raining a little.",
+      "pl": "W Bilbao pada. Pada trochę."
+    },
+    {
+      "id": "s03",
+      "who": "narrator",
+      "text": "Ane tiene un paraguas. El paraguas de Ane es amarillo.",
+      "en": "Ane has an umbrella. Ane's umbrella is yellow.",
+      "pl": "Ane ma parasol. Parasol Ane jest żółty."
+    },
+    {
+      "id": "s04",
+      "who": "narrator",
+      "text": "Ane, Iker y Txiki van a la Plaza Nueva.",
+      "en": "Ane, Iker and Txiki go to the Plaza Nueva.",
+      "pl": "Ane, Iker i Txiki idą na Plaza Nueva."
+    },
+    {
+      "id": "s05",
+      "who": "narrator",
+      "text": "La Plaza Nueva es una plaza. La plaza es grande y bonita.",
+      "en": "The Plaza Nueva is a square. The square is big and pretty.",
+      "pl": "Plaza Nueva to plac. Plac jest duży i ładny."
+    },
+    {
+      "id": "s06",
+      "who": "narrator",
+      "text": "En la plaza hay muchos bares. Un bar, dos bares, tres bares.",
+      "en": "In the square there are many bars. One bar, two bars, three bars.",
+      "pl": "Na placu jest dużo barów. Jeden bar, dwa bary, trzy bary."
+    },
+    {
+      "id": "s07",
+      "who": "narrator",
+      "text": "En la plaza hay un reloj. Son las once.",
+      "en": "In the square there is a clock. It is eleven o'clock.",
+      "pl": "Na placu jest zegar. Jest jedenasta."
+    },
+    {
+      "id": "s08",
+      "who": "iker",
+      "text": "Son las once. ¿Dónde está la persona de la carta?",
+      "en": "It's eleven. Where is the person from the letter?",
+      "pl": "Jest jedenasta. Gdzie jest osoba od listu?"
+    },
+    {
+      "id": "s09",
+      "who": "ane",
+      "text": "No sé. ¿Dónde está? ¡Mira, allí!",
+      "en": "I don't know. Where is she? Look, over there!",
+      "pl": "Nie wiem. Gdzie ona jest? Patrz, tam!"
+    },
+    {
+      "id": "s10",
+      "who": "narrator",
+      "text": "Una mujer viene. La mujer tiene un paraguas rojo.",
+      "en": "A woman is coming. The woman has a red umbrella.",
+      "pl": "Idzie jakaś kobieta. Kobieta ma czerwony parasol."
+    },
+    {
+      "id": "s11",
+      "who": "narrator",
+      "text": "El paraguas de Ane es amarillo. El paraguas de la mujer es rojo.",
+      "en": "Ane's umbrella is yellow. The woman's umbrella is red.",
+      "pl": "Parasol Ane jest żółty. Parasol kobiety jest czerwony."
+    },
+    {
+      "id": "s12",
+      "who": "bruna",
+      "text": "¡Ane! ¡Iker! ¿Cómo andan?",
+      "en": "Ane! Iker! How are you doing?",
+      "pl": "Ane! Iker! Jak leci?"
+    },
+    {
+      "id": "s13",
+      "who": "ane",
+      "text": "¡Bruna! ¡Hola, Bruna!",
+      "en": "Bruna! Hi, Bruna!",
+      "pl": "Bruna! Cześć, Bruna!"
+    },
+    {
+      "id": "s14",
+      "who": "narrator",
+      "text": "La mujer es Bruna. Bruna es amiga de la familia.",
+      "en": "The woman is Bruna. Bruna is a friend of the family.",
+      "pl": "Ta kobieta to Bruna. Bruna jest przyjaciółką rodziny."
+    },
+    {
+      "id": "s15",
+      "who": "narrator",
+      "text": "Bruna no es de España. Bruna es de Argentina. Vive en Buenos Aires.",
+      "en": "Bruna is not from Spain. Bruna is from Argentina. She lives in Buenos Aires.",
+      "pl": "Bruna nie jest z Hiszpanii. Bruna jest z Argentyny. Mieszka w Buenos Aires."
+    },
+    {
+      "id": "s16",
+      "who": "bruna",
+      "text": "¡Che, qué grande que estás, Ane!",
+      "en": "Hey, how big you are now, Ane!",
+      "pl": "Ej, ale urosłaś, Ane!"
+    },
+    {
+      "id": "s17",
+      "who": "iker",
+      "text": "Bruna, ¿la carta es tuya?",
+      "en": "Bruna, is the letter yours?",
+      "pl": "Bruna, to twój list?"
+    },
+    {
+      "id": "s18",
+      "who": "bruna",
+      "text": "Sí, la carta es mía. ¡Es una sorpresa!",
+      "en": "Yes, the letter is mine. It's a surprise!",
+      "pl": "Tak, list jest mój. To niespodzianka!"
+    },
+    {
+      "id": "s19",
+      "who": "bruna",
+      "text": "¿Tienen hambre?",
+      "en": "Are you hungry?",
+      "pl": "Jesteście głodni?"
+    },
+    {
+      "id": "s20",
+      "who": "iker",
+      "text": "¡Sí! Tenemos mucha hambre.",
+      "en": "Yes! We are very hungry.",
+      "pl": "Tak! Jesteśmy bardzo głodni."
+    },
+    {
+      "id": "s21",
+      "who": "bruna",
+      "text": "Vamos al bar. Vamos a comer pintxos.",
+      "en": "Let's go to the bar. Let's go and eat pintxos.",
+      "pl": "Chodźmy do baru. Chodźmy na pintxos."
+    },
+    {
+      "id": "s22",
+      "who": "narrator",
+      "text": "En el bar hay pintxos. Hay pintxos de tortilla, de queso y de jamón.",
+      "en": "In the bar there are pintxos. There are pintxos with omelette, cheese and ham.",
+      "pl": "W barze są pintxos. Są pintxos z tortillą, z serem i z szynką."
+    },
+    {
+      "id": "s23",
+      "who": "bruna",
+      "text": "Ane, ¿vos qué querés?",
+      "en": "Ane, what do you want?",
+      "pl": "Ane, co chcesz?"
+    },
+    {
+      "id": "s24",
+      "who": "ane",
+      "text": "Quiero un pintxo de tortilla, por favor.",
+      "en": "I want an omelette pintxo, please.",
+      "pl": "Chcę pintxo z tortillą, proszę."
+    },
+    {
+      "id": "s25",
+      "who": "bruna",
+      "text": "¿Y vos, Iker?",
+      "en": "And you, Iker?",
+      "pl": "A ty, Iker?"
+    },
+    {
+      "id": "s26",
+      "who": "iker",
+      "text": "Yo quiero un pintxo de queso.",
+      "en": "I want a cheese pintxo.",
+      "pl": "Ja chcę pintxo z serem."
+    },
+    {
+      "id": "s27",
+      "who": "narrator",
+      "text": "¿Y Txiki? Txiki no quiere un pintxo. Txiki quiere agua.",
+      "en": "And Txiki? Txiki doesn't want a pintxo. Txiki wants water.",
+      "pl": "A Txiki? Txiki nie chce pintxo. Txiki chce wody."
+    },
+    {
+      "id": "s28",
+      "who": "bruna",
+      "text": "¡Qué rico! Me encanta Bilbao.",
+      "en": "How tasty! I love Bilbao.",
+      "pl": "Pyszne! Uwielbiam Bilbao."
+    }
   ],
   "glosses": {
-    "sábado": { "tl": "viernes, sábado, domingo", "en": "Saturday", "pl": "sobota" },
-    "llueve": { "tl": "🌧️ Hay agua en la calle: llueve. En Bilbao, la lluvia fina se llama «sirimiri».", "en": "it rains", "pl": "pada (deszcz)" },
-    "poco": { "tl": "poco ↔ mucho", "en": "a little", "pl": "trochę, mało" },
-    "van": { "tl": "Yo voy, tú vas, ellos van.", "en": "(they) go", "pl": "idą" },
-    "plaza": { "tl": "Una plaza es un sitio grande y abierto en la ciudad.", "en": "square", "pl": "plac" },
-    "bonita": { "tl": "La plaza es bonita: me gusta mirarla.", "en": "pretty", "pl": "ładna" },
-    "muchos": { "tl": "muchos ↔ pocos", "en": "many", "pl": "dużo, wiele" },
-    "bares": { "tl": "un bar, dos bares", "en": "bars", "pl": "bary" },
-    "once": { "tl": "10 diez, 11 once, 12 doce", "en": "eleven", "pl": "jedenaście" },
-    "dónde": { "tl": "¿Dónde está? ¿Aquí o allí?", "en": "where", "pl": "gdzie" },
-    "hombre": { "tl": "Bruno es un hombre. Ane es una chica.", "en": "man", "pl": "mężczyzna, pan" },
-    "sé": { "tl": "No sé = no tengo la respuesta.", "en": "(I) know", "pl": "wiem" },
-    "mira": { "tl": "👀 ¡Mira! = usa los ojos.", "en": "look!", "pl": "patrz!" },
-    "allí": { "tl": "aquí ↔ allí", "en": "over there", "pl": "tam" },
-    "viene": { "tl": "Viene hacia nosotros.", "en": "comes", "pl": "idzie, nadchodzi" },
-    "paraguas": { "tl": "☂️ Cuando llueve, uso un paraguas.", "en": "umbrella", "pl": "parasol" },
-    "rojo": { "tl": "🔴 rojo, 🟡 amarillo, 🔵 azul", "en": "red", "pl": "czerwony" },
-    "andan": { "tl": "En Argentina: ¿Cómo andan? = ¿Qué tal estáis?", "en": "how are you doing (Argentina)", "pl": "jak leci (Argentyna)" },
-    "amigo": { "tl": "Bruno es amigo de Mikel y Begoña.", "en": "friend", "pl": "przyjaciel" },
-    "vive": { "tl": "Bruno vive en Buenos Aires: su casa está allí.", "en": "lives", "pl": "mieszka" },
-    "che": { "tl": "En Argentina: «che» = ¡oye!", "en": "hey (Argentina)", "pl": "ej, hej (Argentyna)" },
-    "estás": { "tl": "¡Qué grande estás! = has crecido mucho.", "en": "you are (now)", "pl": "jesteś (teraz)" },
-    "tuya": { "tl": "¿Es tuya? = ¿Es de ti?", "en": "yours", "pl": "twoja" },
-    "mía": { "tl": "Es mía = es de mí.", "en": "mine", "pl": "moja" },
-    "sorpresa": { "tl": "🎁 No lo sabes antes: ¡es una sorpresa!", "en": "surprise", "pl": "niespodzianka" },
-    "tienen": { "tl": "En Argentina: ¿Tienen hambre? En España: ¿Tenéis hambre?", "en": "(you all) have", "pl": "macie" },
-    "hambre": { "tl": "Quiero comer = tengo hambre.", "en": "hunger", "pl": "głód" },
-    "pintxos": { "tl": "Un pintxo es un poco de comida sobre pan. En Bilbao hay pintxos en todos los bares.", "en": "pintxos (Basque bar snacks)", "pl": "pintxos (baskijskie przekąski)" },
-    "tortilla": { "tl": "La tortilla de patatas: huevos y patatas.", "en": "Spanish omelette", "pl": "tortilla (omlet z ziemniakami)" },
-    "queso": { "tl": "🧀", "en": "cheese", "pl": "ser" },
-    "jamón": { "tl": "🍖 El jamón es de cerdo.", "en": "ham", "pl": "szynka" },
-    "vos": { "tl": "En Argentina: vos = tú.", "en": "you (Argentina)", "pl": "ty (Argentyna)" },
-    "querés": { "tl": "En Argentina: vos querés = tú quieres.", "en": "you want (Argentina)", "pl": "chcesz (Argentyna)" },
-    "agua": { "tl": "💧", "en": "water", "pl": "woda" },
-    "rico": { "tl": "¡Qué rico! = está muy bueno.", "en": "tasty", "pl": "pyszny" },
-    "encanta": { "tl": "Me encanta = me gusta mucho.", "en": "(I) love", "pl": "uwielbiam" }
+    "sábado": {
+      "tl": "viernes, sábado, domingo",
+      "en": "Saturday",
+      "pl": "sobota"
+    },
+    "llueve": {
+      "tl": "🌧️ Hay agua en la calle: llueve. En Bilbao, la lluvia fina se llama «sirimiri».",
+      "en": "it rains",
+      "pl": "pada (deszcz)"
+    },
+    "poco": {
+      "tl": "poco ↔ mucho",
+      "en": "a little",
+      "pl": "trochę, mało"
+    },
+    "van": {
+      "tl": "Yo voy, tú vas, ellos van.",
+      "en": "(they) go",
+      "pl": "idą"
+    },
+    "plaza": {
+      "tl": "Una plaza es un sitio grande y abierto en la ciudad.",
+      "en": "square",
+      "pl": "plac"
+    },
+    "bonita": {
+      "tl": "La plaza es bonita: me gusta mirarla.",
+      "en": "pretty",
+      "pl": "ładna"
+    },
+    "muchos": {
+      "tl": "muchos ↔ pocos",
+      "en": "many",
+      "pl": "dużo, wiele"
+    },
+    "bares": {
+      "tl": "un bar, dos bares",
+      "en": "bars",
+      "pl": "bary"
+    },
+    "once": {
+      "tl": "10 diez, 11 once, 12 doce",
+      "en": "eleven",
+      "pl": "jedenaście"
+    },
+    "dónde": {
+      "tl": "¿Dónde está? ¿Aquí o allí?",
+      "en": "where",
+      "pl": "gdzie"
+    },
+    "sé": {
+      "tl": "No sé = no tengo la respuesta.",
+      "en": "(I) know",
+      "pl": "wiem"
+    },
+    "mira": {
+      "tl": "👀 ¡Mira! = usa los ojos.",
+      "en": "look!",
+      "pl": "patrz!"
+    },
+    "allí": {
+      "tl": "aquí ↔ allí",
+      "en": "over there",
+      "pl": "tam"
+    },
+    "viene": {
+      "tl": "Viene hacia nosotros.",
+      "en": "comes",
+      "pl": "idzie, nadchodzi"
+    },
+    "paraguas": {
+      "tl": "☂️ Cuando llueve, uso un paraguas.",
+      "en": "umbrella",
+      "pl": "parasol"
+    },
+    "rojo": {
+      "tl": "🔴 rojo, 🟡 amarillo, 🔵 azul",
+      "en": "red",
+      "pl": "czerwony"
+    },
+    "andan": {
+      "tl": "En Argentina: ¿Cómo andan? = ¿Qué tal estáis?",
+      "en": "how are you doing (Argentina)",
+      "pl": "jak leci (Argentyna)"
+    },
+    "vive": {
+      "tl": "Bruna vive en Buenos Aires: su casa está allí.",
+      "en": "lives",
+      "pl": "mieszka"
+    },
+    "che": {
+      "tl": "En Argentina: «che» = ¡oye!",
+      "en": "hey (Argentina)",
+      "pl": "ej, hej (Argentyna)"
+    },
+    "estás": {
+      "tl": "¡Qué grande estás! = has crecido mucho.",
+      "en": "you are (now)",
+      "pl": "jesteś (teraz)"
+    },
+    "tuya": {
+      "tl": "¿Es tuya? = ¿Es de ti?",
+      "en": "yours",
+      "pl": "twoja"
+    },
+    "mía": {
+      "tl": "Es mía = es de mí.",
+      "en": "mine",
+      "pl": "moja"
+    },
+    "sorpresa": {
+      "tl": "🎁 No lo sabes antes: ¡es una sorpresa!",
+      "en": "surprise",
+      "pl": "niespodzianka"
+    },
+    "tienen": {
+      "tl": "En Argentina: ¿Tienen hambre? En España: ¿Tenéis hambre?",
+      "en": "(you all) have",
+      "pl": "macie"
+    },
+    "hambre": {
+      "tl": "Quiero comer = tengo hambre.",
+      "en": "hunger",
+      "pl": "głód"
+    },
+    "pintxos": {
+      "tl": "Un pintxo es un poco de comida sobre pan. En Bilbao hay pintxos en todos los bares.",
+      "en": "pintxos (Basque bar snacks)",
+      "pl": "pintxos (baskijskie przekąski)"
+    },
+    "tortilla": {
+      "tl": "La tortilla de patatas: huevos y patatas.",
+      "en": "Spanish omelette",
+      "pl": "tortilla (omlet z ziemniakami)"
+    },
+    "queso": {
+      "tl": "🧀",
+      "en": "cheese",
+      "pl": "ser"
+    },
+    "jamón": {
+      "tl": "🍖 El jamón es de cerdo.",
+      "en": "ham",
+      "pl": "szynka"
+    },
+    "vos": {
+      "tl": "En Argentina: vos = tú.",
+      "en": "you (Argentina)",
+      "pl": "ty (Argentyna)"
+    },
+    "querés": {
+      "tl": "En Argentina: vos querés = tú quieres.",
+      "en": "you want (Argentina)",
+      "pl": "chcesz (Argentyna)"
+    },
+    "agua": {
+      "tl": "💧",
+      "en": "water",
+      "pl": "woda"
+    },
+    "rico": {
+      "tl": "¡Qué rico! = está muy bueno.",
+      "en": "tasty",
+      "pl": "pyszny"
+    },
+    "encanta": {
+      "tl": "Me encanta = me gusta mucho.",
+      "en": "(I) love",
+      "pl": "uwielbiam"
+    },
+    "mujer": {
+      "tl": "Bruna es una mujer. Ane es una chica.",
+      "en": "woman",
+      "pl": "kobieta"
+    },
+    "persona": {
+      "tl": "Una mujer, un hombre, una chica: son personas.",
+      "en": "person",
+      "pl": "osoba"
+    },
+    "hoy": {
+      "tl": "Ayer fue viernes. Hoy es sábado.",
+      "en": "today",
+      "pl": "dziś"
+    },
+    "amarillo": {
+      "tl": "🟡 amarillo, 🔴 rojo",
+      "en": "yellow",
+      "pl": "żółty"
+    },
+    "reloj": {
+      "tl": "🕚 El reloj dice la hora.",
+      "en": "clock",
+      "pl": "zegar"
+    },
+    "amiga": {
+      "tl": "Bruna es amiga de Mikel y Begoña.",
+      "en": "friend (a woman)",
+      "pl": "przyjaciółka"
+    },
+    "tenemos": {
+      "tl": "Yo tengo, nosotros tenemos.",
+      "en": "we have",
+      "pl": "mamy"
+    },
+    "vamos": {
+      "tl": "¡Vamos! = nosotros vamos.",
+      "en": "let's go",
+      "pl": "chodźmy"
+    },
+    "bar": {
+      "tl": "En el bar hay pintxos.",
+      "en": "bar",
+      "pl": "bar"
+    },
+    "esto": {
+      "tl": "Esto = lo que ves en la imagen.",
+      "en": "this",
+      "pl": "to"
+    },
+    "lluvia": {
+      "tl": "🌧️ El agua que cae del cielo es la lluvia.",
+      "en": "rain",
+      "pl": "deszcz"
+    }
   },
   "cards": [
-    { "id": "umbrella", "kind": "picture", "word": "el paraguas", "emoji": "☂️" },
-    { "id": "cheese", "kind": "picture", "word": "el queso", "emoji": "🧀" },
-    { "id": "ham", "kind": "picture", "word": "el jamón", "emoji": "🍖" },
-    { "id": "water", "kind": "picture", "word": "el agua", "emoji": "💧" },
-    { "id": "man", "kind": "picture", "word": "el hombre", "emoji": "👨" },
-    { "id": "rain", "kind": "picture", "word": "llueve", "emoji": "🌧️" },
-    { "id": "g1", "kind": "gap", "text": "Bruno ___ en Buenos Aires.", "answer": "vive", "wrong": ["llueve", "viene", "quiere"] },
-    { "id": "g2", "kind": "gap", "text": "En Bilbao ___ un poco.", "answer": "llueve", "wrong": ["vive", "tiene", "mira"] },
-    { "id": "g3", "kind": "gap", "text": "Sí, la carta es ___.", "answer": "mía", "wrong": ["once", "rojo", "allí"] },
-    { "id": "g4", "kind": "gap", "text": "Un hombre viene con un ___ rojo.", "answer": "paraguas", "wrong": ["queso", "agua", "bar"] },
-    { "id": "q1", "kind": "question", "text": "¿De dónde es Bruno?", "answer": "De Argentina.", "wrong": ["De Bilbao.", "De la plaza.", "Del bar."] },
-    { "id": "q2", "kind": "question", "text": "¿De quién es la carta?", "answer": "De Bruno.", "wrong": ["De Iker.", "De Txiki.", "De la plaza."] },
-    { "id": "q3", "kind": "question", "text": "¿Qué quiere Txiki?", "answer": "Agua.", "wrong": ["Un pintxo de queso.", "Un paraguas.", "Una carta."] },
-    { "id": "q4", "kind": "question", "text": "¿Qué quiere Ane?", "answer": "Un pintxo de tortilla.", "wrong": ["Un pintxo de queso.", "Agua.", "Un café."] },
-    { "id": "o1", "kind": "opposite", "word": "poco", "answer": "mucho", "wrong": ["rojo", "allí", "rico"] },
-    { "id": "o2", "kind": "opposite", "word": "allí", "answer": "aquí", "wrong": ["poco", "rojo", "once"] }
+    {
+      "id": "umbrella",
+      "kind": "picture",
+      "word": "el paraguas",
+      "emoji": "☂️"
+    },
+    {
+      "id": "cheese",
+      "kind": "picture",
+      "word": "el queso",
+      "emoji": "🧀"
+    },
+    {
+      "id": "ham",
+      "kind": "picture",
+      "word": "el jamón",
+      "emoji": "🍖"
+    },
+    {
+      "id": "water",
+      "kind": "picture",
+      "word": "el agua",
+      "emoji": "💧"
+    },
+    {
+      "id": "woman",
+      "kind": "picture",
+      "word": "la mujer",
+      "emoji": "👩"
+    },
+    {
+      "id": "clock",
+      "kind": "picture",
+      "word": "el reloj",
+      "emoji": "🕚"
+    },
+    {
+      "id": "rain",
+      "kind": "picture",
+      "word": "llueve",
+      "emoji": "🌧️"
+    },
+    {
+      "id": "g1",
+      "kind": "gap",
+      "text": "Bruna ___ en Buenos Aires.",
+      "answer": "vive",
+      "wrong": [
+        "llueve",
+        "viene",
+        "quiere"
+      ]
+    },
+    {
+      "id": "g2",
+      "kind": "gap",
+      "text": "En Bilbao ___ un poco.",
+      "answer": "llueve",
+      "wrong": [
+        "vive",
+        "tiene",
+        "mira"
+      ]
+    },
+    {
+      "id": "g3",
+      "kind": "gap",
+      "text": "Sí, la carta es ___.",
+      "answer": "mía",
+      "wrong": [
+        "once",
+        "rojo",
+        "allí"
+      ]
+    },
+    {
+      "id": "g4",
+      "kind": "gap",
+      "text": "El paraguas de Ane es ___.",
+      "answer": "amarillo",
+      "wrong": [
+        "rojo",
+        "grande",
+        "pequeño"
+      ]
+    },
+    {
+      "id": "g5",
+      "kind": "gap",
+      "text": "El paraguas de Bruna es ___.",
+      "answer": "rojo",
+      "wrong": [
+        "amarillo",
+        "pequeño",
+        "bonita"
+      ]
+    },
+    {
+      "id": "q1",
+      "kind": "question",
+      "text": "¿De dónde es Bruna?",
+      "answer": "De Argentina.",
+      "wrong": [
+        "De Bilbao.",
+        "De la plaza.",
+        "Del bar."
+      ]
+    },
+    {
+      "id": "q2",
+      "kind": "question",
+      "text": "¿De quién es la carta?",
+      "answer": "De Bruna.",
+      "wrong": [
+        "De Iker.",
+        "De Txiki.",
+        "De Ane."
+      ]
+    },
+    {
+      "id": "q3",
+      "kind": "question",
+      "text": "¿Qué quiere Txiki?",
+      "answer": "Agua.",
+      "wrong": [
+        "Un pintxo de queso.",
+        "Un paraguas.",
+        "Una carta."
+      ]
+    },
+    {
+      "id": "q4",
+      "kind": "question",
+      "text": "¿Qué quiere Ane?",
+      "answer": "Un pintxo de tortilla.",
+      "wrong": [
+        "Un pintxo de queso.",
+        "Agua.",
+        "Un paraguas."
+      ]
+    },
+    {
+      "id": "q5",
+      "kind": "question",
+      "text": "¿Qué hora es en la plaza?",
+      "answer": "Son las once.",
+      "wrong": [
+        "Es sábado.",
+        "Llueve un poco.",
+        "Es grande."
+      ]
+    },
+    {
+      "id": "o1",
+      "kind": "opposite",
+      "word": "poco",
+      "answer": "mucho",
+      "wrong": [
+        "rojo",
+        "allí",
+        "rico"
+      ]
+    },
+    {
+      "id": "o2",
+      "kind": "opposite",
+      "word": "allí",
+      "answer": "aquí",
+      "wrong": [
+        "poco",
+        "rojo",
+        "once"
+      ]
+    }
   ]
 }

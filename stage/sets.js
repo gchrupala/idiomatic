@@ -189,15 +189,29 @@ export function umbrella(color, dx = 0) {
   return g;
 }
 
-// a small map of Spain with Bilbao marked in the north
-export function spainMap(g) {
+// a small map of Spain with Bilbao marked in the north, and Madrid in the
+// centre if asked; `ask` puts a question mark by Madrid
+export const spainMap = (madrid = false, ask = false) => (g) => {
   rect(g, -110, -86, 220, 172, '#ffffff', { rx: 14, stroke: '#333', 'stroke-width': 2 });
   const pts = [[0.02, 0.2], [0.06, 0.1], [0.3, 0.12], [0.62, 0.1], [0.8, 0.18], [0.98, 0.28], [0.9, 0.42], [0.82, 0.55], [0.74, 0.72], [0.56, 0.9], [0.4, 0.97], [0.3, 0.86], [0.24, 0.72], [0.2, 0.52], [0.22, 0.32], [0.12, 0.28]];
   path(g, 'M' + pts.map(([x, y]) => `${-90 + x * 180} ${-74 + y * 140}`).join(' L') + ' Z', '#f7d58b', { stroke: '#c79a3c', 'stroke-width': 2, 'stroke-linejoin': 'round' });
-  const bx = -90 + 0.47 * 180, by = -74 + 0.16 * 140;
+  const at = (x, y) => [-90 + x * 180, -74 + y * 140];
+  const [bx, by] = at(0.47, 0.16);
   circle(g, bx, by, 6, '#e5352b', { stroke: '#ffffff', 'stroke-width': 2 });
-  text(g, bx, by + 24, 'Bilbao', { 'font-size': 15, fill: '#333' });
-  text(g, 0, -60 + 140, 'España', { 'font-size': 12, fill: '#8a6a2a', 'font-weight': 400 });
+  text(g, bx, by + 22, 'Bilbao', { 'font-size': 15, fill: '#333' });
+  if (madrid) {
+    const [mx, my] = at(0.45, 0.52);
+    circle(g, mx, my, 6, '#2d5f9a', { stroke: '#ffffff', 'stroke-width': 2 });
+    text(g, mx, my + 22, ask ? 'Madrid ?' : 'Madrid', { 'font-size': 15, fill: '#333' });
+  }
+};
+
+// a calendar page that says it is Saturday
+export function calendar(g) {
+  rect(g, -52, -46, 104, 92, '#ffffff', { rx: 8, stroke: '#333', 'stroke-width': 2 });
+  rect(g, -52, -46, 104, 26, '#e5352b', { rx: 8 }); rect(g, -52, -30, 104, 10, '#e5352b');
+  text(g, 0, -27, 'SÁBADO', { 'font-size': 15, fill: '#ffffff' });
+  text(g, 0, 28, '🌧️', { 'font-size': 38 });
 }
 
 // the flag of Argentina, as a card
@@ -239,6 +253,7 @@ export function plaza() {
     rect(p, x + 14, FLOOR - 64, 52, 30, '#ffe7a8', { rx: 2 });
     if (signs[k]) {
       const [s, c] = signs[k];
+      if (s !== 'TXOKO') (props.signs ||= []).push({ x: x + 40, y: FLOOR - arch + 13 });
       rect(p, x + 6, FLOOR - arch + 4, 68, 18, c, { rx: 3 });
       text(p, x + 40, FLOOR - arch + 18, s, { 'font-size': 12, fill: '#ffffff' });
     }
