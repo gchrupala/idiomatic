@@ -503,27 +503,26 @@ function updateCamera(dt) {
 
 // ---------- sound ----------
 
-let ctx = null, analyser = null;
+// The voice plays from a plain audio element, never routed through Web Audio:
+// a routed element goes silent when its file is served from another origin
+// (as on githack) and on some phones. Lip-sync reads the loudness envelope
+// that pipeline/build_audio.py stores with each file.
+let ctx = null;
 export const audio = new Audio();
 audio.preservesPitch = true;
-const buf = new Float32Array(1024);
+let env = null; // loudness 0-99, ENV_HZ values a second, of the current sentence
+const ENV_HZ = 25;
+export function setEnvelope(e) { env = e || null; }
 // call from a tap: browsers only start audio after one
 export function unlock() {
   if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
-  try {
-    ctx = new AudioContext();
-    analyser = ctx.createAnalyser();
-    analyser.fftSize = 1024;
-    ctx.createMediaElementSource(audio).connect(analyser);
-    analyser.connect(ctx.destination);
-  } catch (e) { ctx = null; analyser = null; }
+  try { ctx = new AudioContext(); } catch (e) { ctx = null; }
 }
 function measure() {
-  if (!analyser || audio.paused) { rt.mouthLevel = audio.paused ? 0 : 0.35 + 0.3 * Math.sin(rt.clock * 18); return; }
-  analyser.getFloatTimeDomainData(buf);
-  let sum = 0;
-  for (const v of buf) sum += v * v;
-  rt.mouthLevel = Math.min(1, Math.max(0, (Math.sqrt(sum / buf.length) - 0.015) * 9));
+  if (audio.paused) { rt.mouthLevel = 0; return; }
+  if (!env) { rt.mouthLevel = 0.35 + 0.3 * Math.sin(rt.clock * 18); return; }
+  const v = env[Math.floor(audio.currentTime * ENV_HZ)] || 0;
+  rt.mouthLevel = Math.min(1, Math.max(0, (v / 99 - 0.08) * 1.6));
 }
 export function knock() {
   if (!ctx || rt.instant) return;
@@ -578,6 +577,7 @@ export function createPlayer(container, chapter, story, { onLine = () => {}, onE
     const line = sentences[i];
     rt.speaker = s.actors[line.who] || null;
     audio.src = chapter.audio[line.text].file;
+    setEnvelope(chapter.audio[line.text].env);
     audio.playbackRate = rate;
     onLine(i);
     if (playing) audio.play().catch(() => {});

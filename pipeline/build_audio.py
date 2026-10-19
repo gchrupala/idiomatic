@@ -41,6 +41,16 @@ def speak(models, text, v, out):
         subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", f.name, "-af", filt,
                         "-ac", "1", "-codec:a", "libmp3lame", "-q:a", "6", str(out)], check=True)
 
+ENV_HZ = 25
+
+def envelope(path):
+    """Loudness, 0-99, ENV_HZ times a second: the stage moves the mouths with it."""
+    x = np.frombuffer(subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(path), "-f", "f32le", "-ac", "1", "-ar", "16000", "-"],
+                                     capture_output=True, check=True).stdout, dtype=np.float32)
+    n = 16000 // ENV_HZ
+    rms = np.sqrt([np.mean(x[i:i + n] ** 2) for i in range(0, len(x), n)])
+    return [int(v) for v in np.clip(rms / max(rms.max(), 1e-6) * 99, 0, 99).round()]
+
 def chapter_texts(ch):
     """(text, speaker) for everything the app can play."""
     yield from ((s["text"], s["who"]) for s in ch["sentences"])
@@ -73,8 +83,10 @@ def build(models, path):
         out = out_dir / f"{key}.mp3"
         if not out.exists():
             speak(models, spoken, v, out)
-        manifest[text] = {"file": f"audio/{ch['lang']}/{key}.mp3", "secs": round(sf.info(out).duration, 2)}
-    json.dump(manifest, open(pathlib.Path(path).with_suffix(".audio.json"), "w"), ensure_ascii=False, indent=1)
+        manifest[text] = {"file": f"audio/{ch['lang']}/{key}.mp3", "secs": round(sf.info(out).duration, 2), "env": envelope(out)}
+    # one text per line, so diffs stay readable
+    lines = (f"{json.dumps(k, ensure_ascii=False)}: {json.dumps(v)}" for k, v in manifest.items())
+    pathlib.Path(path).with_suffix(".audio.json").write_text("{\n" + ",\n".join(lines) + "\n}\n")
     print(path, len(manifest), "texts")
 
 if __name__ == "__main__":
