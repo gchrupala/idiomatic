@@ -1,0 +1,210 @@
+{
+ "Es sábado. En Bilbao llueve un poco.": {
+  "file": "audio/es/1607a501c819.mp3",
+  "secs": 2.38
+ },
+ "Ane, Iker y Txiki van a la Plaza Nueva.": {
+  "file": "audio/es/c67c4821ddb2.mp3",
+  "secs": 2.45
+ },
+ "La plaza es bonita. Hay muchos bares.": {
+  "file": "audio/es/ec6fa58bb2a1.mp3",
+  "secs": 2.73
+ },
+ "Son las once. ¿Dónde está el hombre de la carta?": {
+  "file": "audio/es/ce56238bd93e.mp3",
+  "secs": 3.09
+ },
+ "No sé... ¡Mira, allí!": {
+  "file": "audio/es/710fc0a7627b.mp3",
+  "secs": 1.5
+ },
+ "Un hombre viene con un paraguas rojo.": {
+  "file": "audio/es/7be6e28ea5b8.mp3",
+  "secs": 2.41
+ },
+ "¡Ane! ¡Iker! ¿Cómo andan?": {
+  "file": "audio/es/49517be7e32b.mp3",
+  "secs": 2.54
+ },
+ "¡Bruno! ¡Hola!": {
+  "file": "audio/es/cf528b357f9c.mp3",
+  "secs": 1.16
+ },
+ "Bruno es amigo de la familia. Es de Argentina y vive en Buenos Aires.": {
+  "file": "audio/es/66e539294a3c.mp3",
+  "secs": 4.21
+ },
+ "¡Che, qué grande que estás, Ane!": {
+  "file": "audio/es/79c7ed141257.mp3",
+  "secs": 2.46
+ },
+ "Bruno, ¿la carta es tuya?": {
+  "file": "audio/es/817a06e008fd.mp3",
+  "secs": 2.02
+ },
+ "Sí, es mía. ¡Es una sorpresa!": {
+  "file": "audio/es/d7690a2d89fa.mp3",
+  "secs": 2.89
+ },
+ "¿Tienen hambre? Vamos a comer unos pintxos.": {
+  "file": "audio/es/0d2adf2c86bd.mp3",
+  "secs": 3.45
+ },
+ "En el bar hay pintxos de tortilla, de queso y de jamón.": {
+  "file": "audio/es/4c6cdcfcfeb5.mp3",
+  "secs": 3.24
+ },
+ "Ane, ¿vos qué querés?": {
+  "file": "audio/es/164da48fe3db.mp3",
+  "secs": 1.77
+ },
+ "Un pintxo de tortilla, por favor.": {
+  "file": "audio/es/a89236c0a2aa.mp3",
+  "secs": 2.28
+ },
+ "¡Y yo uno de queso!": {
+  "file": "audio/es/e1e659dcdb97.mp3",
+  "secs": 1.37
+ },
+ "Y Txiki quiere agua.": {
+  "file": "audio/es/04bbecf604f0.mp3",
+  "secs": 1.54
+ },
+ "¡Qué rico! Me encanta Bilbao.": {
+  "file": "audio/es/75abc2ef403d.mp3",
+  "secs": 2.6
+ },
+ "el paraguas": {
+  "file": "audio/es/8b54eeb76a26.mp3",
+  "secs": 1.19
+ },
+ "el queso": {
+  "file": "audio/es/722e032d2c67.mp3",
+  "secs": 0.92
+ },
+ "el jamón": {
+  "file": "audio/es/c563ca27ee6e.mp3",
+  "secs": 1.04
+ },
+ "el agua": {
+  "file": "audio/es/11718baa7981.mp3",
+  "secs": 0.89
+ },
+ "el hombre": {
+  "file": "audio/es/be27cc4a1b5a.mp3",
+  "secs": 0.95
+ },
+ "llueve": {
+  "file": "audio/es/97d239f658c7.mp3",
+  "secs": 0.68
+ },
+ "Bruno vive en Buenos Aires.": {
+  "file": "audio/es/4c5c65fbf268.mp3",
+  "secs": 2.11
+ },
+ "En Bilbao llueve un poco.": {
+  "file": "audio/es/50365f9ce8c8.mp3",
+  "secs": 1.61
+ },
+ "Sí, la carta es mía.": {
+  "file": "audio/es/a50e557a556a.mp3",
+  "secs": 1.58
+ },
+ "¿De dónde es Bruno?": {
+  "file": "audio/es/62a55ca972b7.mp3",
+  "secs": 1.26
+ },
+ "De Argentina.": {
+  "file": "audio/es/408bfe8127ec.mp3",
+  "secs": 1.03
+ },
+ "De Bilbao.": {
+  "file": "audio/es/a143afdfd756.mp3",
+  "secs": 1.09
+ },
+ "De la plaza.": {
+  "file": "audio/es/74e317f4e9c0.mp3",
+  "secs": 1.04
+ },
+ "Del bar.": {
+  "file": "audio/es/91ebf848e454.mp3",
+  "secs": 0.87
+ },
+ "¿De quién es la carta?": {
+  "file": "audio/es/30fd6c8170c6.mp3",
+  "secs": 1.37
+ },
+ "De Bruno.": {
+  "file": "audio/es/53ace74270f4.mp3",
+  "secs": 0.85
+ },
+ "De Iker.": {
+  "file": "audio/es/cb0be0cf26de.mp3",
+  "secs": 0.81
+ },
+ "De Txiki.": {
+  "file": "audio/es/22946df07b0a.mp3",
+  "secs": 1.07
+ },
+ "¿Qué quiere Txiki?": {
+  "file": "audio/es/564965418ddf.mp3",
+  "secs": 1.37
+ },
+ "Agua.": {
+  "file": "audio/es/ac686bf06ae0.mp3",
+  "secs": 0.73
+ },
+ "Un pintxo de queso.": {
+  "file": "audio/es/bed76fcc1588.mp3",
+  "secs": 1.42
+ },
+ "Un paraguas.": {
+  "file": "audio/es/69865bad74f5.mp3",
+  "secs": 1.24
+ },
+ "Una carta.": {
+  "file": "audio/es/07d26b5d7ab3.mp3",
+  "secs": 1.01
+ },
+ "¿Qué quiere Ane?": {
+  "file": "audio/es/1381a03325dd.mp3",
+  "secs": 1.22
+ },
+ "Un pintxo de tortilla.": {
+  "file": "audio/es/6f35b67001a8.mp3",
+  "secs": 1.76
+ },
+ "Un café.": {
+  "file": "audio/es/9dee114f536c.mp3",
+  "secs": 0.96
+ },
+ "poco": {
+  "file": "audio/es/ea0b657a2b7f.mp3",
+  "secs": 0.79
+ },
+ "mucho": {
+  "file": "audio/es/75d7187b1874.mp3",
+  "secs": 0.9
+ },
+ "rojo": {
+  "file": "audio/es/e8944373718a.mp3",
+  "secs": 0.75
+ },
+ "allí": {
+  "file": "audio/es/40dfbf01b7d5.mp3",
+  "secs": 0.68
+ },
+ "rico": {
+  "file": "audio/es/5993a8e28659.mp3",
+  "secs": 0.89
+ },
+ "aquí": {
+  "file": "audio/es/70e65673f9b8.mp3",
+  "secs": 0.72
+ },
+ "once": {
+  "file": "audio/es/08fed8ea6122.mp3",
+  "secs": 0.87
+ }
+}

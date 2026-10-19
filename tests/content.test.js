@@ -11,12 +11,14 @@ const fill = (text, answer) => {
   return tl === undefined ? t.replace('___', a) : `${t.replace('___', a)}|${tl.replace('___', al)}`;
 };
 
-for (const lang of ['es', 'fa']) {
-  const ch = JSON.parse(fs.readFileSync(path.join(ROOT, `content/${lang}/ch01.json`)));
-  const audio = JSON.parse(fs.readFileSync(path.join(ROOT, `content/${lang}/ch01.audio.json`)));
+const lessons = (lang) => JSON.parse(fs.readFileSync(path.join(ROOT, `content/${lang}/index.json`)));
+
+for (const lang of ['es', 'fa']) for (const id of lessons(lang)) {
+  const ch = JSON.parse(fs.readFileSync(path.join(ROOT, `content/${lang}/${id}.json`)));
+  const audio = JSON.parse(fs.readFileSync(path.join(ROOT, `content/${lang}/${id}.audio.json`)));
   const pair = (s) => assert.equal(lang === 'fa', s.includes('|'), `${lang}: "${s}" should ${lang === 'fa' ? '' : 'not '}be "script|latin"`);
 
-  test(`${lang}: every sentence has a speaker with a voice, and audio`, () => {
+  test(`${lang}/${id}: every sentence has a speaker with a voice, and audio`, () => {
     for (const s of ch.sentences) {
       pair(s.text);
       assert.ok(ch.voices[s.who], `${s.id}: no voice for ${s.who}`);
@@ -26,7 +28,12 @@ for (const lang of ['es', 'fa']) {
     }
   });
 
-  test(`${lang}: scene actions name known actions, actors and props`, () => {
+  if (ch.story) test(`${lang}/${id}: the story module stages every sentence`, () => {
+    const src = fs.readFileSync(path.join(ROOT, `stage/${ch.story}.js`), 'utf8');
+    for (const s of ch.sentences) assert.ok(new RegExp(`\\b${s.id}: \\[`).test(src), `${s.id}: not in stage/${ch.story}.js`);
+  });
+
+  if (!ch.story) test(`${lang}/${id}: scene actions name known actions, actors and props`, () => {
     const things = { ...ch.cast, ...ch.props };
     for (const s of ch.sentences) for (const a of s.scene || []) {
       const kind = ACTIONS.find((k) => k in a);
@@ -38,7 +45,7 @@ for (const lang of ['es', 'fa']) {
     }
   });
 
-  test(`${lang}: every glossed form occurs in the text`, () => {
+  test(`${lang}/${id}: every glossed form occurs in the text`, () => {
     const script = new Set(ch.sentences.flatMap((s) => words(s.text.split('|')[0])));
     const latin = new Set(ch.sentences.flatMap((s) => words(s.text.split('|')[1] || '')));
     for (const [key, g] of Object.entries(ch.glosses)) {
@@ -49,7 +56,7 @@ for (const lang of ['es', 'fa']) {
     }
   });
 
-  test(`${lang}: cards are well formed and have audio`, () => {
+  test(`${lang}/${id}: cards are well formed and have audio`, () => {
     const ids = new Set();
     for (const c of ch.cards) {
       assert.ok(!ids.has(c.id), `${c.id} twice`); ids.add(c.id);
@@ -69,7 +76,7 @@ for (const lang of ['es', 'fa']) {
     assert.ok(ch.cards.filter((c) => c.kind === 'picture').length >= 4, 'at least four pictures');
   });
 
-  test(`${lang}: audio files exist`, () => {
+  test(`${lang}/${id}: audio files exist`, () => {
     for (const a of Object.values(audio)) assert.ok(fs.existsSync(path.join(ROOT, a.file)), `${a.file} missing`);
   });
 }

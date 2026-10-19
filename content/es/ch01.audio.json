@@ -1,59 +1,63 @@
 {
- "Madrid es una ciudad grande. Madrid está en España.": {
-  "file": "audio/es/ec0c26f5d7fd.mp3",
-  "secs": 3.32
+ "Bilbao es una ciudad. Bilbao está en el norte de España.": {
+  "file": "audio/es/938c5be27da3.mp3",
+  "secs": 3.47
  },
- "Esta es la casa de Lucía.": {
-  "file": "audio/es/7b2498d87c6c.mp3",
-  "secs": 2.0
+ "En Bilbao hay un río y un museo muy famoso.": {
+  "file": "audio/es/81df613ba1d0.mp3",
+  "secs": 2.71
  },
- "Lucía tiene catorce años.": {
-  "file": "audio/es/d4b44902c3e8.mp3",
-  "secs": 2.1
+ "Esta es la casa de Ane.": {
+  "file": "audio/es/24a5a7e99f2f.mp3",
+  "secs": 1.57
  },
- "Pablo es el hermano de Lucía. Pablo es pequeño.": {
-  "file": "audio/es/9d8005c055e2.mp3",
-  "secs": 2.62
+ "Ane tiene catorce años.": {
+  "file": "audio/es/5378585e2485.mp3",
+  "secs": 1.91
  },
- "Lucía es grande, Pablo es pequeño.": {
-  "file": "audio/es/a27f91a63d34.mp3",
-  "secs": 2.32
+ "Iker es el hermano de Ane. Iker es pequeño.": {
+  "file": "audio/es/951bcee24d7f.mp3",
+  "secs": 2.67
  },
- "Carmen es la madre. Javier es el padre.": {
-  "file": "audio/es/2db61c09c132.mp3",
-  "secs": 2.38
+ "Ane es grande, Iker es pequeño.": {
+  "file": "audio/es/ce97c912ca7f.mp3",
+  "secs": 2.29
  },
- "Y Rufo es el perro de la familia.": {
-  "file": "audio/es/32cff330e794.mp3",
-  "secs": 2.27
+ "Begoña es la madre. Mikel es el padre.": {
+  "file": "audio/es/84061c5c7d2e.mp3",
+  "secs": 2.49
+ },
+ "Y Txiki es el perro de la familia.": {
+  "file": "audio/es/bd6c793d5412.mp3",
+  "secs": 2.15
  },
  "¡Buenos días! ¿Tenéis hambre?": {
   "file": "audio/es/9ed55fc64bf1.mp3",
   "secs": 1.96
  },
- "¡Sí, mucha!": {
-  "file": "audio/es/a4bd58015271.mp3",
-  "secs": 1.11
+ "¡Sí, mucha, aita!": {
+  "file": "audio/es/4c3f078ee922.mp3",
+  "secs": 1.5
  },
  "En la mesa hay pan, tomate y café.": {
   "file": "audio/es/0181116f97de.mp3",
   "secs": 2.32
  },
- "Lucía, ¿quieres un café con leche?": {
-  "file": "audio/es/60ded606aef9.mp3",
-  "secs": 2.39
+ "Ane, ¿quieres un café con leche?": {
+  "file": "audio/es/3303173420e8.mp3",
+  "secs": 2.19
  },
- "No, gracias, mamá. Un zumo de naranja, por favor.": {
-  "file": "audio/es/10c8ac823d32.mp3",
-  "secs": 3.48
+ "No, gracias, ama. Un zumo de naranja, por favor.": {
+  "file": "audio/es/e124be122699.mp3",
+  "secs": 3.54
  },
  "De repente, alguien llama a la puerta.": {
   "file": "audio/es/16c7a6c63050.mp3",
   "secs": 2.6
  },
- "Lucía abre la puerta. No hay nadie.": {
-  "file": "audio/es/5d1bfd8491c6.mp3",
-  "secs": 2.39
+ "Ane abre la puerta. No hay nadie.": {
+  "file": "audio/es/628361822171.mp3",
+  "secs": 2.33
  },
  "En el suelo hay una carta.": {
   "file": "audio/es/c9f462913129.mp3",
@@ -63,13 +67,13 @@
   "file": "audio/es/55cc6f7d8730.mp3",
   "secs": 1.91
  },
- "¡Es para ti, Lucía! ¿De quién es?": {
-  "file": "audio/es/167e4eb17545.mp3",
-  "secs": 2.45
+ "¡Es para ti, Ane! ¿De quién es?": {
+  "file": "audio/es/d39492013450.mp3",
+  "secs": 2.24
  },
- "La carta no tiene nombre. Solo dice: «El sábado, a las diez, en la Plaza Mayor».": {
-  "file": "audio/es/a09802f7473d.mp3",
-  "secs": 4.88
+ "La carta no tiene nombre. Solo dice: «El sábado, a las once, en la Plaza Nueva».": {
+  "file": "audio/es/ab9f16f61acc.mp3",
+  "secs": 5.44
  },
  "¿Quién es? ¡Qué misterio!": {
   "file": "audio/es/22b74e79435f.mp3",
@@ -107,33 +111,33 @@
   "file": "audio/es/10b6e110a0f5.mp3",
   "secs": 1.01
  },
- "Pablo es el hermano de Lucía.": {
-  "file": "audio/es/c94f127ce085.mp3",
-  "secs": 1.85
+ "Iker es el hermano de Ane.": {
+  "file": "audio/es/05c8c9e8d3f1.mp3",
+  "secs": 1.61
  },
- "Madrid está en España.": {
-  "file": "audio/es/31cd2eec2b12.mp3",
-  "secs": 1.66
+ "Bilbao está en el norte de España.": {
+  "file": "audio/es/0b342a7a35c9.mp3",
+  "secs": 2.2
  },
- "Lucía abre la puerta.": {
-  "file": "audio/es/763191aac9a1.mp3",
-  "secs": 1.67
+ "Ane abre la puerta.": {
+  "file": "audio/es/549073243e5e.mp3",
+  "secs": 1.45
  },
- "¿Quién es Rufo?": {
-  "file": "audio/es/4d773fc04e81.mp3",
-  "secs": 1.04
+ "¿Quién es Txiki?": {
+  "file": "audio/es/557fc1f43705.mp3",
+  "secs": 1.33
  },
  "El perro de la familia.": {
   "file": "audio/es/cac3363e2d85.mp3",
   "secs": 1.57
  },
- "El padre de Lucía.": {
-  "file": "audio/es/24880ac8f043.mp3",
-  "secs": 1.39
+ "El padre de Ane.": {
+  "file": "audio/es/c334b27685fd.mp3",
+  "secs": 1.31
  },
- "El hermano de Lucía.": {
-  "file": "audio/es/c32558ada14f.mp3",
-  "secs": 1.52
+ "El hermano de Ane.": {
+  "file": "audio/es/fc79196e1d0f.mp3",
+  "secs": 1.37
  },
  "Una ciudad.": {
   "file": "audio/es/56310ed2ffd5.mp3",
@@ -159,9 +163,9 @@
   "file": "audio/es/9dee114f536c.mp3",
   "secs": 0.96
  },
- "¿Qué quiere Lucía?": {
-  "file": "audio/es/ace5f280f314.mp3",
-  "secs": 1.18
+ "¿Qué quiere Ane?": {
+  "file": "audio/es/1381a03325dd.mp3",
+  "secs": 1.22
  },
  "Un zumo de naranja.": {
   "file": "audio/es/c0caf725730d.mp3",
@@ -175,13 +179,13 @@
   "file": "audio/es/abe6cec6618a.mp3",
   "secs": 1.07
  },
- "¿Dónde está Madrid?": {
-  "file": "audio/es/af3ba0d4ad2e.mp3",
-  "secs": 1.3
+ "¿Dónde está Bilbao?": {
+  "file": "audio/es/7d1618f07c19.mp3",
+  "secs": 1.43
  },
- "En España.": {
-  "file": "audio/es/696f0db2fdad.mp3",
-  "secs": 1.04
+ "En el norte de España.": {
+  "file": "audio/es/0176437583d3.mp3",
+  "secs": 1.53
  },
  "En la mesa.": {
   "file": "audio/es/e9f6fdd8a8ac.mp3",
