@@ -11,7 +11,7 @@ import rough from './vendor/rough.esm.js';
 
 const ROOT = '../../';
 const params = new URLSearchParams(location.search);
-const STYLE = params.get('style') || 'ink'; // ink | crayon | flat
+const STYLE = params.get('style') || 'flat'; // flat | ink | crayon
 const MOTION = params.get('motion') || 'peppa'; // peppa | springy
 const FPS = +(params.get('fps') || (STYLE === 'crayon' ? 12 : 0)); // 0 = every frame; 12 = held frames, like hand animation
 const NS = 'http://www.w3.org/2000/svg';
@@ -288,77 +288,109 @@ const props = {};
 
 
 class Person {
+  // Local coordinates: facing right, origin between the feet, y up is negative.
   constructor(id, o) {
     Object.assign(this, { id, o });
-    const s = o.scale, L = o.leg, B = o.body, R = o.head;
+    const L = o.leg, B = o.body, R = o.head;
     this.L = L; this.B = B; this.R = R;
     this.root = el('g', {}, layers.front);
     this.flipG = el('g', {}, this.root);
     this.squashG = el('g', {}, this.flipG);
-    this.scaleG = el('g', { transform: `scale(${s})` }, this.squashG);
+    this.scaleG = el('g', { transform: `scale(${o.scale})` }, this.squashG);
     this.bodyG = el('g', {}, this.scaleG);
-    const limb = (parent, color, len, w) => {
-      const g = el('g', {}, parent);
-      line(g, 0, 0, 0, len, color, w);
-      return g;
-    };
-    // legs hang from the hip, shoes point forward
+    const skinDark = shade(o.skin, 0.9);
+
+    // legs: thigh and shin, each turning at its joint; shoes point forward
+    this.T = L * 0.5; this.S = L * 0.5;
     const legColor = o.trousers || o.skin;
-    this.legs = [shade(legColor, 0.85), legColor].map((c, i) => {
-      const g = limb(this.bodyG, c, L - 4, 6);
-      ellipse(g, 4, L - 3, 8, 4.5, i ? o.shoes : shade(o.shoes, 0.8));
-      return g;
+    this.legs = [0.86, 1].map((f) => {
+      const hip = el('g', {}, this.bodyG);
+      const tw = o.trousers ? 11 : 9;
+      path(hip, `M${-tw / 2} 0 L${tw / 2} 0 L${tw / 2 - 1} ${this.T} L${-tw / 2 + 1} ${this.T} Z`, shade(legColor, f));
+      const knee = el('g', { transform: `translate(0 ${this.T})` }, hip);
+      circle(knee, 0, 0, tw / 2 - 1, shade(legColor, f));
+      path(knee, `M${-tw / 2 + 1} 0 L${tw / 2 - 1} 0 L${tw / 2 - 2} ${this.S - 2} L${-tw / 2 + 2} ${this.S - 2} Z`, shade(o.trousers ? legColor : o.skin, f));
+      const sh = o.shoes;
+      path(knee, `M-6 ${this.S - 6} Q-7 ${this.S + 1} -2 ${this.S + 1} L12 ${this.S + 1} Q15 ${this.S} 12 ${this.S - 4} Q6 ${this.S - 8} -6 ${this.S - 6} Z`, shade(sh, f));
+      if (o.trousers) rect(knee, -6, this.S - 1, 19, 2.5, shade('#ffffff', f), { rx: 1 });
+      return { hip, knee };
     });
-    const shoulderY = -L - B + 9;
-    this.shoulderY = shoulderY;
-    this.armBack = limb(this.bodyG, shade(o.top, 0.85), B * 0.78, 6);
-    circle(this.armBack, 0, B * 0.8, 4.2, shade(o.skin, 0.92));
-    // body: a dress, or a shirt over trousers
-    const top = -L - B, bottom = o.trousers ? -L + 4 : -L + 10;
-    const w1 = B * 0.3, w2 = o.trousers ? B * 0.36 : B * 0.5;
-    path(this.bodyG, `M${-w1} ${top + 6} Q0 ${top - 4} ${w1} ${top + 6} L${w2} ${bottom} Q0 ${bottom + 5} ${-w2} ${bottom} Z`, o.top);
-    if (o.collar) path(this.bodyG, `M${-w1 * 0.6} ${top + 3} Q0 ${top + 12} ${w1 * 0.6} ${top + 3}`, 'none', { stroke: o.collar, 'stroke-width': 3 });
-    // head on a short neck
-    this.headG = el('g', {}, this.bodyG);
-    const cx = R * 0.18, cy = -R * 0.9;
-    const h = this.headG;
-    const clipId = `face-${id}`;
-    const clip = el('clipPath', { id: clipId }, h);
-    el('ellipse', { cx, cy, rx: R, ry: R * 0.94 }, clip);
-    const hairBack = { bob: [cx - R * 0.32, cy - R * 0.08, R * 0.98, R * 1.04], long: [cx - R * 0.42, cy + R * 0.42, R * 0.86, R * 1.42], short: [cx - R * 0.2, cy - R * 0.22, R * 0.98, R * 0.9], bun: [cx - R * 0.2, cy - R * 0.22, R * 0.98, R * 0.9] }[o.hairStyle];
-    if (o.hairStyle === 'bun') circle(h, cx - R * 0.95, cy - R * 0.55, R * 0.42, o.hair);
-    ellipse(h, hairBack[0], hairBack[1], hairBack[2], hairBack[3], o.hair);
-    circle(h, cx - R * 0.2, cy + R * 0.05, R * 0.17, shade(o.skin, 0.93));
-    ellipse(h, cx, cy, R, R * 0.94, o.skin, { smooth: true });
-    circle(h, cx + R * 0.98, cy + R * 0.05, R * 0.14, shade(o.skin, 0.96));
-    // hair over the top of the face, cut by the face outline
-    const cap = el('g', { 'clip-path': `url(#${clipId})` }, h);
-    const hc = { bob: [-0.1, -0.62, 1.05, 0.62], long: [-0.25, -0.6, 1.0, 0.58], short: [-0.3, -0.7, 0.95, 0.52], bun: [-0.3, -0.62, 0.95, 0.56] }[o.hairStyle];
-    ellipse(cap, cx + R * hc[0], cy + R * hc[1], R * hc[2], R * hc[3], o.hair);
-    if (o.hairStyle === 'bob' || o.hairStyle === 'long') ellipse(cap, cx - R * 0.78, cy + R * 0.1, R * 0.32, R * 0.9, o.hair);
-    if (o.beard) path(cap, `M${cx - R * 0.5} ${cy + R * 0.2} Q${cx + R * 0.2} ${cy + R * 1.2} ${cx + R * 1.1} ${cy + R * 0.25} L${cx + R * 1.1} ${cy + R * 1.2} L${cx - R * 0.5} ${cy + R * 1.2} Z`, o.hair);
-    circle(h, cx + R * 0.42, cy + R * 0.3, R * 0.15, '#ff8a8a', { opacity: 0.55 });
-    this.eyes = [[0.36, -0.12], [0.74, -0.14]].map(([ex, ey]) => {
-      const g = el('g', { transform: `translate(${cx + R * ex} ${cy + R * ey})` }, h);
-      const inner = el('g', {}, g);
-      circle(inner, 0, 0, R * 0.15, '#ffffff');
-      const pupil = circle(inner, R * 0.03, 0, R * 0.075, '#222222');
-      return { g: inner, pupil };
-    });
-    this.brows = [[0.36, -0.36], [0.74, -0.38]].map(([bx, by]) => el('path', { d: '', fill: 'none', stroke: shade(o.hair, 0.8), 'stroke-width': 2.4, 'stroke-linecap': 'round', transform: `translate(${cx + R * bx} ${cy + R * by})` }, h));
-    this.mouth = path(h, '', '#7a2030', { transform: `translate(${cx + R * 0.62} ${cy + R * 0.48})`, stroke: '#7a2030', 'stroke-width': 2, 'stroke-linejoin': 'round' });
-    if (o.hijab) {
-      // a scarf: drawn over the hair, open at the face
-      path(h, `M${cx - R * 1.15} ${cy + R * 0.9} Q${cx - R * 1.3} ${cy - R * 1.4} ${cx + R * 0.3} ${cy - R * 1.12} Q${cx + R * 1.2} ${cy - R * 0.9} ${cx + R * 1.12} ${cy - R * 0.2} Q${cx + R * 0.5} ${cy - R * 0.8} ${cx - R * 0.1} ${cy - R * 0.2} Q${cx - R * 0.2} ${cy + R * 0.6} ${cx + R * 0.4} ${cy + R * 1.0} Q${cx - R * 0.3} ${cy + R * 1.4} ${cx - R * 1.15} ${cy + R * 0.9} Z`, o.hijab);
+
+    // arms: upper arm and forearm, bent at the elbow, so gestures never go stiff
+    this.U = B * 0.46; this.F = B * 0.42;
+    const arm = (sleeve, skin) => {
+      const shoulder = el('g', {}, this.bodyG);
+      line(shoulder, 0, 0, 0, this.U, sleeve, 8.5);
+      const elbow = el('g', { transform: `translate(0 ${this.U})` }, shoulder);
+      line(elbow, 0, 0, 0, this.F - 3, sleeve, 8);
+      el('ellipse', { cx: 0.5, cy: this.F - 0.5, rx: 3.9, ry: 4.6, fill: skin }, elbow);
+      const hand = el('g', { transform: `translate(0 ${this.F})` }, elbow);
+      return { shoulder, elbow, hand };
+    };
+    this.armBack = arm(shade(o.top, 0.86), skinDark);
+
+    // body: a dress, or a shirt over trousers; a darker band gives it form
+    const top = -L - B, waist = top + B * 0.42;
+    this.shoulderY = top + 7;
+    if (o.trousers) {
+      rect(this.bodyG, -11, -L - 6, 22, 12, o.trousers, { rx: 4 });
+      path(this.bodyG, `M-12 ${top + 4} Q0 ${top - 3} 12 ${top + 4} L13 ${-L + 2} Q0 ${-L + 6} -13 ${-L + 2} Z`, o.top);
+      path(this.bodyG, `M-12 ${top + 4} Q-8 ${top + 1} -5 ${top} L-7 ${-L + 4} L-13 ${-L + 2} Z`, shade(o.top, 0.9));
+    } else {
+      const hem = -L * 0.6;
+      path(this.bodyG, `M-11 ${top + 4} Q0 ${top - 3} 11 ${top + 4} L12 ${waist} L23 ${hem} Q0 ${hem + 6} -23 ${hem} L-12 ${waist} Z`, o.top);
+      path(this.bodyG, `M-11 ${top + 4} Q-8 ${top + 1} -5 ${top} L-6 ${waist} L-12 ${hem + 2} L-23 ${hem} L-12 ${waist} Z`, shade(o.top, 0.9));
     }
-    this.armFront = limb(this.bodyG, o.top, B * 0.78, 6.5);
-    circle(this.armFront, 0, B * 0.8, 4.5, o.skin);
-    this.hand = el('g', { transform: `translate(0 ${B * 0.82})` }, this.armFront);
+    if (o.collar) {
+      circle(this.bodyG, -4.5, top + 2, 5.5, o.collar);
+      circle(this.bodyG, 5, top + 2, 5.5, o.collar);
+    }
+    rect(this.bodyG, -3.5, top - 9, 7.5, 12, skinDark, { rx: 3 });
+
+    // head
+    this.headG = el('g', {}, this.bodyG);
+    const h = this.headG, cx = R * 0.1, cy = -R * 0.95;
+    const P = (x, y) => `${cx + R * x} ${cy + R * y}`;
+    const hair = HAIR[o.hairStyle](P);
+    const hairDark = shade(o.hair, 0.82);
+    if (hair.back) path(h, hair.back, hairDark);
+    if (o.hairStyle === 'bun') circle(h, cx - R * 0.9, cy - R * 0.5, R * 0.36, hairDark);
+    el('ellipse', { cx, cy, rx: R * 0.95, ry: R, fill: o.skin }, h);
+    el('ellipse', { cx: cx + R * 0.93, cy: cy + R * 0.06, rx: R * 0.13, ry: R * 0.12, fill: shade(o.skin, 0.97) }, h);
+    el('ellipse', { cx: cx + R * 0.08, cy: cy + R * 0.32, rx: R * 0.17, ry: R * 0.1, fill: '#ff8f8f', opacity: 0.4 }, h);
+    if (o.beard) path(h, hair.beard, o.hair);
+    // eyes: white, big dark iris, a highlight; the far eye is a little smaller
+    const eyeK = o.eyes || 1;
+    this.eyes = [[0.2, 0.0, 1], [0.64, -0.02, 0.86]].map(([ex, ey, k]) => {
+      const g = el('g', { transform: `translate(${cx + R * ex} ${cy + R * ey}) scale(${k * eyeK})` }, h);
+      const inner = el('g', {}, g);
+      el('ellipse', { cx: 0, cy: 0, rx: R * 0.17, ry: R * 0.22, fill: '#ffffff' }, inner);
+      const iris = el('g', {}, inner);
+      circle(iris, R * 0.045, R * 0.03, R * 0.145, '#2b1a12', { noInk: true });
+      circle(iris, R * 0.095, -R * 0.04, R * 0.055, '#ffffff', { noInk: true });
+      circle(iris, R * 0.0, R * 0.1, R * 0.025, '#ffffff', { noInk: true, opacity: 0.7 });
+      path(inner, `M${-R * 0.17} ${-R * 0.04} Q0 ${-R * 0.27} ${R * 0.17} ${-R * 0.04}`, 'none', { stroke: '#2b1a12', 'stroke-width': 1.3, plain: true });
+      if (o.lashes) path(inner, `M${-R * 0.16} ${-R * 0.07} l${-R * 0.08} ${-R * 0.06}`, 'none', { stroke: '#2b1a12', 'stroke-width': 1.4, 'stroke-linecap': 'round', plain: true });
+      return { g: inner, iris };
+    });
+    this.brows = [[0.2, -0.42], [0.65, -0.42]].map(([bx, by]) => el('path', { d: '', fill: 'none', stroke: hairDark, 'stroke-width': 1.7, 'stroke-linecap': 'round', transform: `translate(${cx + R * bx} ${cy + R * by})` }, h));
+    this.mouth = el('path', { d: '', fill: 'none', stroke: '#b53a4c', 'stroke-width': 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', transform: `translate(${cx + R * 0.46} ${cy + R * 0.5})` }, h);
+    path(h, hair.front, o.hair);
+    if (!o.hijab) {
+      el('ellipse', { cx: cx - R * 0.5, cy: cy + R * 0.16, rx: R * 0.16, ry: R * 0.21, fill: o.skin }, h);
+      el('ellipse', { cx: cx - R * 0.48, cy: cy + R * 0.17, rx: R * 0.08, ry: R * 0.12, fill: shade(o.skin, 0.86) }, h);
+    }
+    if (hair.shine) path(h, hair.shine, 'none', { stroke: shade(o.hair, 1.25), 'stroke-width': 1.6, 'stroke-linecap': 'round', plain: true });
+    if (o.hijab) path(h, HAIR.hijab(P), o.hijab);
+
+    this.armFront = arm(o.top, o.skin);
+    this.hand = this.armFront.hand;
 
     this.x = 0; this.facing = 1;
+    const j = (v) => new Spring(v, M.armK, M.armD);
     this.sp = {
       flip: new Spring(1, M.flipK, M.flipD), walk: new Spring(0, 60, 14), sit: new Spring(0, 110, 15), crouch: new Spring(0, 110, 15),
-      squash: new Spring(0, 380, 9), armF: new Spring(8, M.armK, M.armD), armB: new Spring(-8, M.armK, M.armD), tilt: new Spring(0, 140, 12), talk: new Spring(0, 30, 11),
+      squash: new Spring(0, 380, 9), uF: j(4), lF: j(-8), uB: j(-4), lB: j(-8), tilt: new Spring(0, 140, 12), talk: new Spring(0, 30, 11),
       lean: new Spring(0, 90, 12), happy: new Spring(0.4, 60, 12), surprised: new Spring(0, 80, 12), mouth: new Spring(0, 900, 45),
       stretch: new Spring(0, 140, 10), lookY: new Spring(0, 90, 14),
     };
@@ -375,18 +407,17 @@ class Person {
     this.path = [{ x, speed, then, face }];
     this.sp.squash.kick(-1.2);
   }
-  sit(on = true) { set(this.sp.sit, on ? 1 : 0); if (!instant) this.hop(14); }
+  sit(on = true) { set(this.sp.sit, on ? 1 : 0); if (!instant) this.hop(12); }
   hop(h = 18) { if (!instant) { this.hopT = 0; this.hopH = h; } }
   nod() { if (!instant) this.nodT = 0; }
   shake() { if (!instant) this.shakeT = 0; }
   wave() { if (!instant) this.waveT = 0; }
   pose(name) { this.gesture = name; }
   expr(e) { for (const [k, v] of Object.entries(e)) set(this.sp[k], v); }
-  headPos() { return { x: this.x + this.facing * this.R * 0.4 * this.o.scale, y: FLOOR + (-this.L - this.B - this.R) * this.o.scale }; }
+  headPos() { return { x: this.x + this.facing * this.R * 0.3 * this.o.scale, y: FLOOR + (-this.L - this.B - this.R) * this.o.scale }; }
 
   update(dt, t) {
     const sp = this.sp;
-    // walking along the path
     if (this.path.length) {
       const goal = this.path[0], d = goal.x - this.x, step = goal.speed * dt;
       if (Math.abs(d) <= step) {
@@ -399,67 +430,100 @@ class Person {
     sp.walk.target = this.path.length ? 1 : 0;
     for (const s of Object.values(sp)) s.step(dt);
     const w = Math.max(0, sp.walk.v), sit = sp.sit.v, cr = sp.crouch.v;
-    // arms: gesture angles, in degrees, 0 = hanging down, negative = forwards
+    // arms: [upper, forearm] for front and back arm, in degrees.
+    // 0 hangs down, negative swings forwards; the forearm angle is relative
+    // to the upper arm, and it always keeps some bend.
     const G = {
-      down: [8, -8], offer: [-62, -6], point: [-88, 6], reach: [-28, -10], hold: [-58, -6], show: [-100, -10],
-      yay: [-150, -150], belly: [-35, -28], shrug: [-40, 40],
-    }[this.gesture] || [8, -8];
-    let aF = G[0], aB = G[1];
-    if (this.waveT < 1.6) { this.waveT += dt; aF = -150 + 18 * Math.sin(this.waveT * 14); }
-    sp.armF.target = aF - 22 * Math.sin(this.phase) * w;
-    sp.armB.target = aB + 22 * Math.sin(this.phase) * w;
-    // legs: swing when walking, stick out when sitting, splay when crouching
-    const swing = M.swing * Math.sin(this.phase) * w;
-    const legF = swing - 78 * sit - 48 * cr, legB = -swing - 72 * sit + 30 * cr;
-    this.legs[0].setAttribute('transform', `translate(-2 ${-this.L}) rotate(${legB})`);
-    this.legs[1].setAttribute('transform', `translate(3 ${-this.L}) rotate(${legF})`);
-    // the body bounces as it walks; hops are a simple arc
+      down: [12, 50, 10, 52], offer: [-18, -72, -4, -10], point: [-38, -42, -4, -10], reach: [-48, -22, -6, -10],
+      hold: [-8, -96, -4, -12], show: [-26, -104, -4, -12], yay: [166, 6, 176, 2], belly: [-6, -84, 2, -80],
+      shrug: [12, -100, -10, -100], behind: [16, 40, 14, 40],
+    }[this.gesture] || [12, 50, 10, 52];
+    let [uF, lF, uB, lB] = G;
+    if (this.waveT < 1.6) { this.waveT += dt; uF = -62; lF = -96 + 22 * Math.sin(this.waveT * 13); }
+    const armSwing = 20 * Math.sin(this.phase) * w;
+    set(sp.uF, uF - armSwing); set(sp.lF, lF - 10 * w);
+    set(sp.uB, uB + armSwing); set(sp.lB, lB - 10 * w);
+    for (const [a, u, l] of [[this.armFront, sp.uF.v, sp.lF.v], [this.armBack, sp.uB.v, sp.lB.v]]) {
+      a.shoulder.setAttribute('transform', `translate(${a === this.armFront ? 2 : -3} ${this.shoulderY}) rotate(${u})`);
+      a.elbow.setAttribute('transform', `translate(0 ${this.U}) rotate(${l})`);
+    }
+    // legs: walking swings the thighs and bends the knees; sitting puts the
+    // thighs forward with the shins hanging; crouching folds both
+    const swingF = M.swing * Math.sin(this.phase) * w, swingB = -swingF;
+    const kneeF = 34 * Math.max(0, Math.cos(this.phase)) * w, kneeB = 34 * Math.max(0, -Math.cos(this.phase)) * w;
+    const thigh = (sw) => sw - 88 * sit - 62 * cr, shin = (k) => k + 88 * sit + 112 * cr;
+    const legs = [[this.legs[0], thigh(swingB) + 6 * sit, shin(kneeB) - 6 * sit, -2], [this.legs[1], thigh(swingF), shin(kneeF), 3]];
+    for (const [leg, a, k, x] of legs) {
+      leg.hip.setAttribute('transform', `translate(${x} ${-this.L}) rotate(${a})`);
+      leg.knee.setAttribute('transform', `translate(0 ${this.T}) rotate(${k})`);
+    }
+    // keep the feet on the ground (or on the chair): the hip drops by what the legs lose
+    const rad = Math.PI / 180;
+    const legH = (a, k) => this.T * Math.cos(a * rad) + this.S * Math.cos((a + k) * rad);
+    const standH = Math.max(legH(thigh(swingF), shin(kneeF)), legH(thigh(swingB), shin(kneeB)));
+    const seat = 50 / this.o.scale;
+    let drop = (this.L - standH) * (1 - sit) + (this.L - seat - 2) * sit;
     let lift = M.bob * Math.abs(Math.cos(this.phase)) * w;
     if (this.hopT < 0.45) { this.hopT += dt; lift += this.hopH * Math.sin((this.hopT / 0.45) * Math.PI); }
-    const seat = 50 / this.o.scale;
-    const drop = (this.L - seat - 3) * sit + this.L * 0.42 * cr;
-    const breathe = 1 + 0.012 * Math.sin(t * 2.2 + this.L);
-    const stretch = 1 + 0.18 * sp.stretch.v;
-    this.bodyG.setAttribute('transform', `translate(0 ${drop - lift}) rotate(${sp.lean.v + 14 * cr + 4 * w} 0 ${-this.L}) scale(1 ${breathe * stretch}) `);
-    this.armBack.setAttribute('transform', `translate(-3 ${this.shoulderY}) rotate(${sp.armB.v})`);
-    this.armFront.setAttribute('transform', `translate(2 ${this.shoulderY}) rotate(${sp.armF.v})`);
-    // head: talking bobs it, nods and shakes rock it
+    const breathe = 1 + 0.01 * Math.sin(t * 2.2 + this.L);
+    const stretch = 1 + 0.12 * sp.stretch.v;
+    this.bodyG.setAttribute('transform', `translate(0 ${drop - lift}) rotate(${sp.lean.v + 12 * cr + 3 * w} 0 ${-this.L}) scale(1 ${breathe * stretch})`);
+    // head: talking rocks it, nods and shakes too
     const level = speaker === this ? mouthLevel : 0;
     sp.mouth.target = level;
     sp.talk.target = speaker === this && !audio.paused ? 1 : 0;
-    let tilt = sp.tilt.v + M.levelRock * sp.mouth.v * Math.sin(t * 9) + M.talkRock * sp.talk.v * Math.sin(t * M.talkHz) - 10 * sp.lookY.v;
-    if (this.nodT < 0.7) { this.nodT += dt; tilt += 12 * Math.sin(this.nodT * 18) * (1 - this.nodT / 0.7); }
+    let tilt = sp.tilt.v + M.levelRock * sp.mouth.v * Math.sin(t * 9) + M.talkRock * sp.talk.v * Math.sin(t * M.talkHz) - 8 * sp.lookY.v;
+    if (this.nodT < 0.7) { this.nodT += dt; tilt += 10 * Math.sin(this.nodT * 18) * (1 - this.nodT / 0.7); }
     let shakeX = 0;
     if (this.shakeT < 0.9) { this.shakeT += dt; shakeX = Math.sin(this.shakeT * 20) * (1 - this.shakeT / 0.9); }
-    this.headG.setAttribute('transform', `translate(2 ${-this.L - this.B + 4}) rotate(${tilt + 6 * shakeX})`);
-    // eyes: blink, open wide when surprised, pupils glance
+    this.headG.setAttribute('transform', `translate(1 ${-this.L - this.B - 3}) rotate(${tilt + 5 * shakeX})`);
+    // eyes: blink, widen with surprise, irises glance
     this.blinkIn -= dt;
-    if (this.blinkIn < 0) { this.blink = 0.14; this.blinkIn = 2 + Math.random() * 3; }
+    if (this.blinkIn < 0) { this.blink = 0.13; this.blinkIn = 2 + Math.random() * 3; }
     this.blink = Math.max(0, this.blink - dt);
-    const open = this.blink > 0 ? 0.12 : 1;
-    const big = 1 + 0.35 * Math.max(0, sp.surprised.v);
+    const open = this.blink > 0 ? 0.1 : 1 - 0.25 * Math.max(0, sp.happy.v - 0.6);
+    const big = 1 + 0.18 * Math.max(0, sp.surprised.v);
     for (const e of this.eyes) {
       e.g.setAttribute('transform', `scale(${big} ${big * open})`);
-      e.pupil.setAttribute('cx', this.R * (0.04 - 0.06 * shakeX));
-      e.pupil.setAttribute('cy', this.R * 0.05 * sp.lookY.v);
+      e.iris.setAttribute('transform', `translate(${-this.R * 0.05 * shakeX} ${this.R * 0.05 * sp.lookY.v})`);
     }
-    const bu = -3 * sp.surprised.v;
-    this.brows.forEach((b) => b.setAttribute('d', `M${-this.R * 0.13} ${bu + 1} Q0 ${bu - 2 - 2 * sp.surprised.v} ${this.R * 0.13} ${bu}`));
+    const bu = -2.5 * sp.surprised.v;
+    this.brows.forEach((b) => b.setAttribute('d', `M${-this.R * 0.14} ${bu + 1.5} Q0 ${bu - 2.2 - 1.5 * sp.surprised.v} ${this.R * 0.14} ${bu + 0.5}`));
     // mouth: open with the voice, a smile, or an O of surprise
-    const mw = this.R * 0.22, m = sp.mouth.v, hp = sp.happy.v, su = Math.max(0, sp.surprised.v);
-    let d;
-    if (m > 0.04) d = `M${-mw} 0 Q0 ${-2 + hp * 2} ${mw} 0 Q0 ${3 + m * 12} ${-mw} 0 Z`;
-    else if (su > 0.35) d = `M${-mw * 0.4} 0 a${mw * 0.4} ${mw * 0.5 * su} 0 1 0 ${mw * 0.8} 0 a${mw * 0.4} ${mw * 0.5 * su} 0 1 0 ${-mw * 0.8} 0 Z`;
-    else d = `M${-mw} ${-hp * 2} Q0 ${hp * 7 - 1} ${mw} ${-hp * 2}`;
+    const mw = this.R * 0.15, m = sp.mouth.v, hp = sp.happy.v, su = Math.max(0, sp.surprised.v);
+    let d, filled = false;
+    if (m > 0.04) { d = `M${-mw} 0 Q0 ${hp * 2} ${mw} 0 Q0 ${3 + m * 11} ${-mw} 0 Z`; filled = true; }
+    else if (su > 0.35) { const r = mw * 0.45; d = `M${-r} 0 a${r} ${r * 1.2 * su} 0 1 0 ${2 * r} 0 a${r} ${r * 1.2 * su} 0 1 0 ${-2 * r} 0 Z`; filled = true; }
+    else d = `M${-mw} ${-hp * 1.5} Q0 ${hp * 6 + 1} ${mw} ${-hp * 1.5}`;
     this.mouth.setAttribute('d', d);
-    this.mouth.setAttribute('fill', m > 0.04 || su > 0.35 ? '#7a2030' : 'none');
-    // whole figure: position, cartoon turn (scaleX through zero), squash
+    this.mouth.setAttribute('fill', filled ? '#8a2436' : 'none');
     const sq = sp.squash.v * M.squash;
     this.squashG.setAttribute('transform', `scale(${1 + sq} ${1 - sq})`);
     this.flipG.setAttribute('transform', `scale(${sp.flip.v} 1)`);
     this.root.setAttribute('transform', `translate(${this.x} ${FLOOR})`);
   }
 }
+
+// Hair shapes, as paths around the head; P(x, y) is a point in head radii.
+const HAIR = {
+  bob: (P) => ({
+    back: `M${P(0.5, -0.92)} C${P(-0.3, -1.32)} ${P(-1.3, -0.8)} ${P(-1.18, 0.3)} C${P(-1.12, 0.95)} ${P(-0.72, 1.22)} ${P(-0.2, 1.1)} L${P(-0.05, 0.25)} Z`,
+    front: `M${P(-0.98, 0.15)} C${P(-1.02, -1.08)} ${P(0.3, -1.34)} ${P(0.96, -0.62)} C${P(1.0, -0.45)} ${P(0.98, -0.3)} ${P(0.92, -0.22)} C${P(0.7, -0.5)} ${P(0.35, -0.6)} ${P(0.0, -0.56)} C${P(-0.3, -0.42)} ${P(-0.46, 0.1)} ${P(-0.5, 0.7)} C${P(-0.7, 0.66)} ${P(-0.9, 0.45)} ${P(-0.98, 0.15)} Z`,
+    shine: `M${P(-0.6, -0.72)} Q${P(-0.1, -1.02)} ${P(0.4, -0.88)}`,
+  }),
+  short: (P) => ({
+    back: null,
+    front: `M${P(-0.95, 0.3)} C${P(-1.15, -0.55)} ${P(-0.85, -1.05)} ${P(-0.35, -1.12)} Q${P(-0.25, -1.3)} ${P(-0.05, -1.32)} Q${P(0.0, -1.18)} ${P(0.12, -1.14)} Q${P(0.3, -1.3)} ${P(0.5, -1.22)} Q${P(0.45, -1.1)} ${P(0.5, -1.02)} C${P(0.85, -0.9)} ${P(1.0, -0.62)} ${P(0.96, -0.36)} C${P(0.7, -0.62)} ${P(0.4, -0.66)} ${P(0.15, -0.6)} C${P(-0.1, -0.52)} ${P(-0.3, -0.35)} ${P(-0.36, -0.1)} C${P(-0.5, 0.05)} ${P(-0.6, 0.2)} ${P(-0.66, 0.4)} Z`,
+    shine: `M${P(-0.55, -0.78)} Q${P(-0.15, -1.0)} ${P(0.25, -0.92)}`,
+  }),
+  bun: (P) => ({
+    back: `M${P(0.3, -0.98)} C${P(-0.4, -1.2)} ${P(-1.15, -0.8)} ${P(-1.05, 0.05)} C${P(-1.0, 0.45)} ${P(-0.75, 0.6)} ${P(-0.5, 0.55)} Z`,
+    front: `M${P(-0.98, 0.1)} C${P(-1.05, -0.95)} ${P(0.2, -1.28)} ${P(0.95, -0.55)} C${P(0.6, -0.68)} ${P(0.2, -0.62)} ${P(-0.15, -0.5)} C${P(-0.38, -0.35)} ${P(-0.5, -0.05)} ${P(-0.56, 0.25)} Z`,
+    shine: `M${P(-0.55, -0.75)} Q${P(-0.05, -1.03)} ${P(0.4, -0.88)}`,
+  }),
+  hijab: (P) => `M${P(-1.12, 1.25)} C${P(-1.32, -0.6)} ${P(-0.55, -1.32)} ${P(0.25, -1.18)} C${P(0.92, -1.06)} ${P(1.12, -0.6)} ${P(1.0, -0.38)} C${P(0.6, -0.68)} ${P(0.05, -0.62)} ${P(-0.25, -0.35)} C${P(-0.5, 0.0)} ${P(-0.38, 0.75)} ${P(0.15, 0.98)} C${P(0.45, 1.1)} ${P(0.62, 0.95)} ${P(0.75, 0.8)} C${P(0.6, 1.3)} ${P(0.0, 1.5)} ${P(-1.12, 1.25)} Z`,
+};
+HAIR.beardy = (P) => ({ ...HAIR.short(P), beard: `M${P(-0.55, 0.05)} C${P(-0.45, 0.85)} ${P(0.2, 1.2)} ${P(0.62, 0.95)} C${P(0.85, 0.8)} ${P(0.95, 0.55)} ${P(0.92, 0.32)} C${P(0.75, 0.5)} ${P(0.62, 0.3)} ${P(0.45, 0.28)} C${P(0.25, 0.3)} ${P(0.1, 0.5)} ${P(0.05, 0.6)} C${P(-0.2, 0.45)} ${P(-0.35, 0.2)} ${P(-0.55, 0.05)} Z` });
 
 class Dog {
   constructor(id, o) {
@@ -551,10 +615,10 @@ function bounce(name) {
 // ---------- cast ----------
 
 const A = {
-  lucia: new Person('lucia', { scale: 1.0, leg: 46, body: 50, head: 30, skin: '#f5c9a6', hair: '#4a2a17', hairStyle: 'bob', top: '#e8485f', collar: '#ffffff', shoes: '#3b3b8f' }),
-  pablo: new Person('pablo', { scale: 0.78, leg: 40, body: 46, head: 32, skin: '#f5c9a6', hair: '#6b4224', hairStyle: 'short', top: '#3b7dd8', trousers: '#2d4f7a', shoes: '#e8485f' }),
-  carmen: new Person('carmen', { scale: 1.12, leg: 50, body: 56, head: 27, skin: '#efbf98', hair: '#2a1a12', hairStyle: 'bun', top: '#2e9d6b', collar: '#ffd35a', shoes: '#7a3b20' }),
-  javier: new Person('javier', { scale: 1.2, leg: 50, body: 58, head: 27, skin: '#efbf98', hair: '#2f2a28', hairStyle: 'short', beard: true, top: '#7a5cc2', trousers: '#3a3a48', shoes: '#4a2f1d' }),
+  lucia: new Person('lucia', { scale: 1.0, leg: 58, body: 50, head: 27, skin: '#f8cfae', hair: '#6a3a1e', hairStyle: 'bob', lashes: true, top: '#e2445c', collar: '#fff8ef', shoes: '#2e3a8f' }),
+  pablo: new Person('pablo', { scale: 0.84, leg: 46, body: 44, head: 29, skin: '#f8cfae', hair: '#7a4a24', hairStyle: 'short', top: '#2f74d0', trousers: '#2c4b80', shoes: '#e2445c' }),
+  carmen: new Person('carmen', { scale: 1.12, leg: 62, body: 60, head: 22, eyes: 0.85, skin: '#f0c19c', hair: '#3a2216', hairStyle: 'bun', lashes: true, top: '#2e9d6b', collar: '#ffe9a8', shoes: '#7a3b20' }),
+  javier: new Person('javier', { scale: 1.18, leg: 62, body: 62, head: 22, eyes: 0.85, skin: '#f0c19c', hair: '#332a26', hairStyle: 'beardy', beard: true, top: '#7a5cc2', trousers: '#3a3a48', shoes: '#4a2f1d' }),
   rufo: new Dog('rufo', { color: '#d9a066', patch: '#b07a3c' }),
 };
 
@@ -834,10 +898,9 @@ function frame(now) {
 
 // style picker and paper grain
 const VARIANTS = [
+  ['Plano', 'style=flat&motion=peppa'],
   ['Tinta', 'style=ink&motion=peppa'],
   ['Ceras', 'style=crayon&motion=peppa'],
-  ['Plano', 'style=flat&motion=peppa'],
-  ['Plano, con muelles', 'style=flat&motion=springy'],
 ];
 for (const [label, q] of VARIANTS) {
   const here = new URLSearchParams(q);
@@ -862,7 +925,7 @@ async function boot() {
   chapter = ch; chapter.audio = au;
   sentences = ch.sentences;
   seek(0);
-  window.mowaScene = { seek, A, get index() { return index; }, get clock() { return clock; }, setPlaying: (p) => { playing = p; } };
+  window.mowaScene = { seek, A, shot, get index() { return index; }, get clock() { return clock; }, setPlaying: (p) => { playing = p; } };
 }
 
 $('start').onclick = () => {

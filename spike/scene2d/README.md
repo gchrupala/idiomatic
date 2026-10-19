@@ -9,8 +9,10 @@ Open `spike/scene2d/index.html` from a web server at the repo root (it loads
 
 ## How it works
 
-- Characters (`Person`, `Dog` in `scene2d.js`) are side-on cut-outs: a head
-  with both eyes on the facing side, a dress or shirt, stick limbs.
+- Characters (`Person`, `Dog` in `scene2d.js`) are drawn three-quarter
+  side-on: big eyes with irises and highlights, shaped hair (`HAIR`), ears,
+  collar, two-tone clothes. Arms bend at the elbow and legs at the knee, so
+  gestures keep a natural bend instead of a straight raised arm.
 - Every moving part is a damped spring (`Spring`), so movement overshoots
   and settles: a hopping walk, cartoon turns (the figure flips through
   zero width), squash when stopping, arm gestures, head bob while talking.
@@ -24,11 +26,11 @@ Open `spike/scene2d/index.html` from a web server at the repo root (it loads
 
 ## Variants (URL parameters)
 
-- `style=ink` (default): rough.js outlines in dark ink over flat colour,
+- `style=flat` (default): clean vector shapes.
+- `style=ink`: rough.js outlines in dark ink over flat colour,
   with line boil (three wobbly copies of every shape, cycled 8 times a second).
 - `style=crayon`: hatched colour-pencil fills, coloured edges, and held
   frames at 12 fps (`fps=12`), like hand animation.
-- `style=flat`: clean vector shapes.
 - `motion=peppa` (default): quick clean turns, small fast steps, little
   bounce, head rocking while talking. `motion=springy`: the first version,
   with more overshoot and bounce.
