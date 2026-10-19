@@ -31,7 +31,7 @@ The Spanish lessons: Ane (14), her brother Iker, their parents Begoña and Mikel
 Audio is text-to-speech made by `pipeline/build_audio.py` with Piper voices (sherpa-onnx), one mp3 per text in `audio/<lang>/`, mapped in `content/<lang>/chNN.audio.json`:
 
 ```
-pip install sherpa-onnx soundfile numpy
+pip install sherpa-onnx soundfile numpy pyworld
 python pipeline/build_audio.py MODELS_DIR content/es/ch01.json content/es/ch02.json content/fa/ch01.json
 ```
 

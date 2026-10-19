@@ -7,8 +7,8 @@ sherpa-onnx GitHub release "tts-models". Writes audio/<lang>/<hash>.mp3 and
 content/<lang>/<chapter>.audio.json, which maps each text to its file and length.
 Files that already exist are kept, so only changed text is spoken again.
 """
-import hashlib, json, pathlib, subprocess, sys, tempfile
-import numpy as np, soundfile as sf, sherpa_onnx
+import hashlib, json, pathlib, re, subprocess, sys, tempfile
+import numpy as np, pyworld as pw, soundfile as sf, sherpa_onnx
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SPEED = 0.9  # a little slower than the voices' default, for learners
@@ -28,16 +28,60 @@ def tts(models, voice):
         _tts[voice] = sherpa_onnx.OfflineTts(cfg)
     return _tts[voice]
 
+# Spanish question words: questions that start with one fall at the end, as
+# statements do; the others (yes/no questions) rise.
+WH = re.compile(r"^(qué|quién|quiénes|dónde|adónde|cómo|cuándo|cuánto|cuánta|cuántos|cuántas|cuál|cuáles|por qué|para qué|de quién|para quién|de dónde|con quién)\b", re.I)
+INTONATION = 3  # bump to re-speak every question when the contours change
+
+def segments(text):
+    """The sentences of a text, each ending in its punctuation."""
+    return [t for t in re.split(r"(?<=[.?!…»])\s+", text.strip()) if t]
+
+def question_rise(x, sr, k):
+    """Bends the pitch of the last ~0.45 s of voice up to (1 + k) times the
+    speaker's median pitch, re-synthesised with WORLD. Piper lets questions
+    fall like statements; k = 0.6 gives a yes/no rise, k = 0 just stops the fall."""
+    x64 = x.astype(np.float64)
+    f0, t = pw.harvest(x64, sr, frame_period=5.0)
+    sp, ap = pw.cheaptrick(x64, f0, t, sr), pw.d4c(x64, f0, t, sr)
+    hop = int(0.005 * sr)
+    rms = np.array([np.sqrt(np.mean(x64[i * hop:(i + 1) * hop + hop] ** 2)) if i * hop < len(x64) else 0 for i in range(len(f0))])
+    voiced = np.nonzero((f0 > 0) & (rms > 0.15 * rms.max()))[0]
+    if not len(voiced):
+        return x
+    base, end = np.median(f0[voiced]), voiced[-1]
+    span = np.arange(max(0, end - int(0.45 / 0.005)), len(f0))
+    r = np.clip((span - span[0]) / max(1, end - span[0]), 0, 1) ** 1.4
+    g = f0.copy()
+    target = base * (1 + k)
+    g[span] = np.where(f0[span] > 0, f0[span] * (1 - r) + np.maximum(f0[span], target * (0.85 + 0.15 * r)) * r, 0)
+    y = pw.synthesize(g, sp, ap, sr, frame_period=5.0)
+    return y[:len(x)].astype(np.float32)
+
 def speak(models, text, v, out):
-    a = tts(models, v["voice"]).generate(text, sid=v.get("sid", 0), speed=SPEED)
-    pad = np.zeros(int(0.15 * a.sample_rate), dtype=np.float32)
-    x = np.concatenate([pad, np.array(a.samples, dtype=np.float32), pad])
+    engine = tts(models, v["voice"])
+    sr = engine.sample_rate
+    gen = lambda t: np.array(engine.generate(t, sid=v.get("sid", 0), speed=SPEED).samples, dtype=np.float32)
+    if "?" in text and v["voice"].startswith("es"):
+        # Piper reads questions like statements: speak each sentence on its own
+        # and give the questions a final rise (a small one for wh-questions).
+        parts = []
+        for seg in segments(text):
+            y = gen(seg)
+            if seg.endswith("?"):
+                y = question_rise(y, sr, 0.0 if WH.match(seg[seg.find("¿") + 1:]) else 0.6)
+            parts += [y, np.zeros(int(0.12 * sr), dtype=np.float32)]
+        samples = np.concatenate(parts[:-1])
+    else:
+        samples = gen(text)
+    pad = np.zeros(int(0.15 * sr), dtype=np.float32)
+    x = np.concatenate([pad, samples, pad])
     with tempfile.NamedTemporaryFile(suffix=".wav") as f:
-        sf.write(f.name, x, a.sample_rate)
+        sf.write(f.name, x, sr)
         p = v.get("pitch", 1)
         # Raise the pitch without changing the speed: for children and for female
         # characters where the language only has male voices.
-        filt = f"asetrate={a.sample_rate * p:.0f},aresample={a.sample_rate},atempo={1 / p:.4f}" if p != 1 else "anull"
+        filt = f"asetrate={sr * p:.0f},aresample={sr},atempo={1 / p:.4f}" if p != 1 else "anull"
         subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", f.name, "-af", filt,
                         "-ac", "1", "-codec:a", "libmp3lame", "-q:a", "6", str(out)], check=True)
 
@@ -79,7 +123,8 @@ def build(models, path):
     for text, who in chapter_texts(ch):
         v = ch["voices"][who]
         spoken = script(text)
-        key = hashlib.sha1(json.dumps([spoken, v], sort_keys=True).encode()).hexdigest()[:12]
+        tag = [INTONATION] if "?" in spoken and v["voice"].startswith("es") else []
+        key = hashlib.sha1(json.dumps([spoken, v, *tag], sort_keys=True).encode()).hexdigest()[:12]
         out = out_dir / f"{key}.mp3"
         if not out.exists():
             speak(models, spoken, v, out)
